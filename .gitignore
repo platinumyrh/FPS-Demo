@@ -1,0 +1,29 @@
+/[Ll]ibrary/
+/[Tt]emp/
+/[Obj]/
+/[Build]/
+/[Builds]/
+/[Logs]/
+/[UserSettings]/
+MemoryCaptures/
+RecordedCaptures/
+/ASSET_STORE_PACKAGES/
+
+# 每台电脑特有的配置文件
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# 操作系统临时文件
+.DS_Store
+Thumbs.db
