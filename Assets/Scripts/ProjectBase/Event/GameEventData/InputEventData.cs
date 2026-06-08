@@ -39,3 +39,15 @@ public class InputActionData : GameEventData
         ActionName = actionName;
     }
 }
+/// <summary>
+/// 奔跑输入数据
+/// </summary>
+public class InputRunData : GameEventData
+{
+    public bool IsRunning;
+
+    public InputRunData(bool isRunning)
+    {
+        IsRunning = isRunning;
+    }
+}

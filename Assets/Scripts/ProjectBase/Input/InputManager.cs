@@ -22,6 +22,9 @@ public class InputManager :BaseManager<InputManager>
     private Vector2 currentMoveDirection;
     private bool isInitialized = false;
 
+
+    private bool isRunningPressed = false; // 记录当前是否按下了奔跑键
+
     ///<summary>
     ///初始化输入系统 在游戏启动时调用一次
     ///<summary>
@@ -74,6 +77,10 @@ public class InputManager :BaseManager<InputManager>
         player.Move.performed += OnMovePerformed;
         player.Move.canceled += OnMoveCanceled;
 
+        player.Running.performed += OnRunningPerformed;
+        player.Running.canceled += OnRunningCanceled;
+
+
         // 跳跃 - 使用回调方式
         player.Jump.performed += OnJumpPerformed;
 
@@ -88,6 +95,9 @@ public class InputManager :BaseManager<InputManager>
 
         // 暂停
         player.Pause.performed += OnPausePerformed;
+
+        //鼠标滚轮
+        player.Scroll.performed += OnScrollPerformed;
     }
 
     private void UnregisterInputCallbacks()
@@ -98,11 +108,17 @@ public class InputManager :BaseManager<InputManager>
 
         player.Move.performed -= OnMovePerformed;
         player.Move.canceled -= OnMoveCanceled;
+
+        player.Running.performed -= OnRunningPerformed;
+        player.Running.canceled -= OnRunningCanceled;
+
         player.Jump.performed -= OnJumpPerformed;
       //  player.Attack.performed -= OnAttackPerformed;
         player.Look.performed -= OnLookPerformed;
         player.Interact.performed -= OnInteractPerformed;
         player.Pause.performed -= OnPausePerformed;
+
+        
     }
 
     #endregion
@@ -123,6 +139,20 @@ public class InputManager :BaseManager<InputManager>
         currentMoveDirection = Vector2.zero;
         GameEventBus.GetInstance().Publish(GameEventType.OnMoveCanceled,
             new InputEventData(Vector2.zero));
+    }
+
+    private void OnRunningPerformed(InputAction.CallbackContext context)
+    {
+        isRunningPressed = true;
+        // 发布开始奔跑事件（假设你在 GameEventType 里加了 OnRunInput）
+        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputRunData(true));
+    }
+
+    private void OnRunningCanceled(InputAction.CallbackContext context)
+    {
+        isRunningPressed = false;
+        // 发布停止奔跑事件
+        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputRunData(false));
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
@@ -155,6 +185,26 @@ public class InputManager :BaseManager<InputManager>
     {
         GameEventBus.GetInstance().Publish(GameEventType.OnPauseInput,
             new InputActionData("Pause"));
+    }
+
+    private void OnScrollPerformed(InputAction.CallbackContext context)
+    {
+        Vector2 scrollValue = context.ReadValue<Vector2>();
+
+        // 我们主要关心 y 轴（上下滚动）
+        if (scrollValue.y > 0)
+        {
+            Debug.Log("滚轮向上：切下一把武器");
+            // 可以通过 GameEventBus 发布一个切换下一把枪的事件
+            GameEventBus.GetInstance().Publish(GameEventType.OnNextWeapon,new InputActionData("NextWeapon"));
+        }
+        else if (scrollValue.y < 0)
+        {
+            Debug.Log("滚轮向下：切上一把武器");
+            // 可以通过 GameEventBus 发布一个切换上一把枪的事件
+            GameEventBus.GetInstance().Publish(GameEventType.OnPrevWeapon, new InputActionData("PrevWeapon"));
+
+        }
     }
 
     #endregion

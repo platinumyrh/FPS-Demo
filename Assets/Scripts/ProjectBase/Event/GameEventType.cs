@@ -12,11 +12,16 @@
     OnJumpInput,
     OnAttackInput,
     OnInteractInput,
+    OnRunInput,
 
     //瞄准/视角
     OnLookInput,
 
     //菜单/系统
     OnPauseInput,
+
+    //武器切换
+    OnNextWeapon,     // 切换下一把武器
+    OnPrevWeapon      // 切换上一把武器
 
 }

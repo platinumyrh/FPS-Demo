@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     private Camera playerCamera;
     private Animator animator;
     private CharacterController characterController; // 引用根对象上的CC
+    private PlayerAnimationController animationController; // 引用子对象上的动画控制器
 
     [Header("视角设置")]
     [SerializeField] private float mouseSensitivity = 1.0f; // 鼠标灵敏度系数
@@ -16,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("移动设置")]
     [SerializeField] private float moveSpeed = 5f;         // 移动速度
+    [SerializeField] private float runMultiplier = 1.5f;    // 奔跑时的速度倍率
+    [SerializeField] private bool isRunning;           // 是否正在奔跑
     private Vector2 currentInputMove; // 缓存当前的移动输入，在 Update 中统一处理
 
     [Header("跳跃相关")]
@@ -42,6 +45,7 @@ public class PlayerController : MonoBehaviour
         playerCamera = GetComponentInChildren<Camera>();
         characterController = GetComponentInParent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+        animationController = GetComponentInChildren<PlayerAnimationController>();
         SetCursorState(true); // 游戏开始时默认锁定鼠标
 
 
@@ -54,6 +58,8 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnJumpInput, OnJump);
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnAttackInput, OnAttack);
         GameEventBus.GetInstance().Subscribe<InputLookData>(GameEventType.OnLookInput, OnLook);
+        GameEventBus.GetInstance().Subscribe<InputRunData>(GameEventType.OnRunInput, OnRun);
+      
 
     }
     private void OnDisable()
@@ -64,6 +70,7 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnJumpInput, OnJump);
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnAttackInput, OnAttack);
         GameEventBus.GetInstance().Unsubscribe<InputLookData>(GameEventType.OnLookInput, OnLook);
+        GameEventBus.GetInstance().Unsubscribe<InputRunData>(GameEventType.OnRunInput, OnRun);
     }
 
     private void Update()
@@ -104,6 +111,10 @@ public class PlayerController : MonoBehaviour
             Debug.Log("跳跃成功！起跳速度：" + verticalVelocity);
         }
     }
+    private void OnRun(InputRunData data)
+    {
+        isRunning = data.IsRunning;
+    }
     /// <summary>
     /// 每帧执行：将水平移动、重力、跳跃速度结合，最终传给 CharacterController
     /// </summary>
@@ -111,7 +122,7 @@ public class PlayerController : MonoBehaviour
     {
         if (characterController == null) return;
 
-        // 1. 检测是否在地面上（直接使用 CC 自带的 isGrounded 属性）
+        // 检测是否在地面上（直接使用 CC 自带的 isGrounded 属性）
         isGrounded = characterController.isGrounded;
 
         if (isGrounded && verticalVelocity < 0)
@@ -125,15 +136,18 @@ public class PlayerController : MonoBehaviour
             verticalVelocity += gravity * Time.deltaTime;
         }
 
-        // 2. 计算水平移动向量 (X 和 Z 轴)
+        //  计算水平移动向量 (X 和 Z 轴)
         Vector3 moveMovement = transform.right * currentInputMove.x + transform.forward * currentInputMove.y;
-        Vector3 finalVelocity = moveMovement * moveSpeed;
+
+        bool actualRunning = isRunning && currentInputMove.magnitude > 0.1f;
+        Vector3 finalVelocity = moveMovement * (isRunning ? moveSpeed:moveSpeed*runMultiplier);
        
-        // 3. 将计算好的垂直速度 (Y 轴) 融合进最终速度向量中
+        // 将计算好的垂直速度 (Y 轴) 融合进最终速度向量中
         finalVelocity.y = verticalVelocity;
 
-        // 4. 最终调用一次 Move 方法（统一乘以 Time.deltaTime）
+        // 最终调用一次 Move 方法（统一乘以 Time.deltaTime）
         characterController.Move(finalVelocity * Time.deltaTime);
+        animationController.ApplyLocomotion(currentInputMove,actualRunning); // 将当前输入方向传给动画控制器，驱动动画参数
     }
 
     private void OnAttack(InputActionData data)
@@ -187,4 +201,9 @@ public class PlayerController : MonoBehaviour
             Cursor.visible = true;                    // 显示鼠标
         }
     }
+
+
+    
+
 }
+
