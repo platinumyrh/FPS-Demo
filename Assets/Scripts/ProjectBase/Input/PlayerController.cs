@@ -27,6 +27,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isGrounded;           // 是否在地面上
     private float verticalVelocity;   // 当前垂直方向的速度（Y轴速度）
 
+    [Header("战斗相关")]
+    [SerializeField] private bool isAiming = false;
+    [SerializeField] private bool isShooting = false;
+    [SerializeField] private float fireRate = 0.1f; // 射击间隔（秒），0.1秒一发等于每分钟600发
+    private float fireTimer = 0f; // 射击冷却计时器
+
 
     private float cameraPitch = 0f;       // 累积相机的上下旋转量量值
     private bool isCursorLocked = true;   // 鼠标锁定状态变量
@@ -56,10 +62,13 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Subscribe<InputEventData>(GameEventType.OnMoveInput, OnMove);
         GameEventBus.GetInstance().Subscribe<InputEventData>(GameEventType.OnMoveCanceled, OnMove); // 复用同一个回调，输入取消时传入 Vector2.zero
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnJumpInput, OnJump);
-        GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnAttackInput, OnAttack);
+        GameEventBus.GetInstance().Subscribe<InputHoldingData>(GameEventType.OnShoot, OnShootChange);
         GameEventBus.GetInstance().Subscribe<InputLookData>(GameEventType.OnLookInput, OnLook);
-        GameEventBus.GetInstance().Subscribe<InputRunData>(GameEventType.OnRunInput, OnRun);
-      
+        GameEventBus.GetInstance().Subscribe<InputHoldingData>(GameEventType.OnRunInput, OnRun);
+        GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnReload, OnReload);
+        GameEventBus.GetInstance().Subscribe<InputHoldingData>(GameEventType.OnAim, OnAimChange);
+        GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
+
 
     }
     private void OnDisable()
@@ -68,9 +77,12 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Unsubscribe<InputEventData>(GameEventType.OnMoveInput, OnMove);
         GameEventBus.GetInstance().Unsubscribe<InputEventData>(GameEventType.OnMoveCanceled, OnMove);
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnJumpInput, OnJump);
-        GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnAttackInput, OnAttack);
+        GameEventBus.GetInstance().Unsubscribe<InputHoldingData>(GameEventType.OnShoot, OnShootChange);
         GameEventBus.GetInstance().Unsubscribe<InputLookData>(GameEventType.OnLookInput, OnLook);
-        GameEventBus.GetInstance().Unsubscribe<InputRunData>(GameEventType.OnRunInput, OnRun);
+        GameEventBus.GetInstance().Unsubscribe<InputHoldingData>(GameEventType.OnRunInput, OnRun);
+        GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnReload, OnReload);
+        GameEventBus.GetInstance().Unsubscribe<InputHoldingData>(GameEventType.OnAim, OnAimChange);
+        GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
     }
 
     private void Update()
@@ -87,6 +99,19 @@ public class PlayerController : MonoBehaviour
             InputManager.GetInstance().Dispose();
             Debug.Log("输入系统已卸载");
         }
+
+        // 处理全自动连续射击的计时器
+        if (fireTimer > 0f)
+        {
+            fireTimer -= Time.deltaTime;
+        }
+
+        // 如果玩家长按着开火键，且冷却好了
+        if (isShooting && fireTimer <= 0f)
+        {
+            HandleContinuousShooting();
+        }
+
         ApplyMovementAndGravity(); // 每帧调用一次，处理移动和重力逻辑
     }
 
@@ -111,9 +136,9 @@ public class PlayerController : MonoBehaviour
             Debug.Log("跳跃成功！起跳速度：" + verticalVelocity);
         }
     }
-    private void OnRun(InputRunData data)
+    private void OnRun(InputHoldingData data)
     {
-        isRunning = data.IsRunning;
+        isRunning = data.IsHolding;
     }
     /// <summary>
     /// 每帧执行：将水平移动、重力、跳跃速度结合，最终传给 CharacterController
@@ -140,20 +165,78 @@ public class PlayerController : MonoBehaviour
         Vector3 moveMovement = transform.right * currentInputMove.x + transform.forward * currentInputMove.y;
 
         bool actualRunning = isRunning && currentInputMove.magnitude > 0.1f;
-        Vector3 finalVelocity = moveMovement * (isRunning ? moveSpeed:moveSpeed*runMultiplier);
-       
-        // 将计算好的垂直速度 (Y 轴) 融合进最终速度向量中
+        float currentSpeed = moveSpeed;
+        if (actualRunning && !isAiming)
+        {
+            currentSpeed = moveSpeed * runMultiplier;
+        }
+        else if (isAiming)
+        {
+            currentSpeed = moveSpeed * 0.5f; // 瞄准时走得慢
+            actualRunning = false;          // 瞄准时强制不能处于奔跑动画状态
+        }
+
+        Vector3 finalVelocity = moveMovement * currentSpeed;
         finalVelocity.y = verticalVelocity;
 
-        // 最终调用一次 Move 方法（统一乘以 Time.deltaTime）
         characterController.Move(finalVelocity * Time.deltaTime);
-        animationController.ApplyLocomotion(currentInputMove,actualRunning); // 将当前输入方向传给动画控制器，驱动动画参数
+
+        // 驱动移动动画
+        animationController.ApplyLocomotion(currentInputMove, actualRunning);
     }
 
-    private void OnAttack(InputActionData data)
+   
+    public void OnShoot(InputActionData data)
     {
-        Debug.Log("攻击！");
-        // 处理攻击逻辑...
+        Debug.Log($"玩家控制器接收到射击事件，动作名称：{data.ActionName}");
+    }
+
+    public void OnShootChange(InputHoldingData data)
+    {
+        isShooting = data.IsHolding; // 这里的 IsRunning 代表按键是否按住
+        if (!isShooting)
+        {
+            Debug.Log("停止射击");
+            animationController.StopShoot(); // 可选：通知动画停止
+        }
+    }
+
+    // 执行单发开火逻辑
+    private void HandleContinuousShooting()
+    {
+        fireTimer = fireRate; // 重置冷却
+        Debug.Log("突突突！发射子弹！");
+
+        // 执行扣子弹、射线检测（Raycast）算伤害等核心逻辑...
+
+        // 触发开火动画表现
+        animationController.ApplyShoot();
+    }
+
+    public void OnReload(InputActionData data)
+    {
+        Debug.Log($"玩家控制器接收到换弹事件，动作名称：{data.ActionName}");
+        animationController.ApplyReload(); // 触发换弹动画
+    }
+
+    public void OnAim(InputActionData data)
+    {
+        Debug.Log($"玩家控制器接收到瞄准事件，动作名称：{data.ActionName}");
+        animationController.ApplyAim(isAiming); // 触发瞄准动画
+    }
+
+    public void OnAimChange(InputHoldingData data)
+    {
+        isAiming = data.IsHolding;
+        Debug.Log(isAiming ? "进入瞄准" : "退出瞄准");
+
+        // 将最新的瞄准状态同步给动画控制器
+        animationController.ApplyAim(isAiming);
+    }
+
+    public void OnInspect(InputActionData data)
+    {
+        Debug.Log($"玩家控制器接收到检查枪械事件，动作名称：{data.ActionName}");
     }
 
     /// <summary>

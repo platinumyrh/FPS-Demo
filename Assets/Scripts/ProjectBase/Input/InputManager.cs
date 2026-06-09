@@ -86,9 +86,10 @@ public class InputManager :BaseManager<InputManager>
 
         // 攻击
        // player.Attack.performed += OnAttackPerformed;
+      
 
         // 视角
-       player.Look.performed += OnLookPerformed;
+        player.Look.performed += OnLookPerformed;
 
         // 交互
         player.Interact.performed += OnInteractPerformed;
@@ -98,6 +99,16 @@ public class InputManager :BaseManager<InputManager>
 
         //鼠标滚轮
         player.Scroll.performed += OnScrollPerformed;
+
+        ///<summary>
+        ///枪械相关输入
+        ///</summary>
+        player.Shoot.performed += OnShootPerformed;
+        player.Shoot.canceled += OnShootCanceled;
+        player.Reload.performed += OnReloadPerformed;
+        player.Aim.performed += OnAimPerformed;
+        player.Aim.canceled += OnAimCanceled;
+        player.Inspect.performed += OnInspectPerformed;
     }
 
     private void UnregisterInputCallbacks()
@@ -114,11 +125,21 @@ public class InputManager :BaseManager<InputManager>
 
         player.Jump.performed -= OnJumpPerformed;
       //  player.Attack.performed -= OnAttackPerformed;
+        player.Shoot.performed -= OnShootPerformed;
+
         player.Look.performed -= OnLookPerformed;
         player.Interact.performed -= OnInteractPerformed;
         player.Pause.performed -= OnPausePerformed;
 
-        
+        ///<summary>
+        ///枪械相关输入
+        ///</summary>
+        player.Shoot.performed -= OnShootPerformed;
+        player.Shoot.canceled -= OnShootCanceled;
+        player.Aim.performed -= OnAimPerformed;
+        player.Aim.canceled -= OnAimCanceled;
+
+
     }
 
     #endregion
@@ -145,14 +166,14 @@ public class InputManager :BaseManager<InputManager>
     {
         isRunningPressed = true;
         // 发布开始奔跑事件（假设你在 GameEventType 里加了 OnRunInput）
-        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputRunData(true));
+        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputHoldingData(true));
     }
 
     private void OnRunningCanceled(InputAction.CallbackContext context)
     {
         isRunningPressed = false;
         // 发布停止奔跑事件
-        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputRunData(false));
+        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputHoldingData(false));
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
@@ -161,11 +182,6 @@ public class InputManager :BaseManager<InputManager>
             new InputActionData("Jump"));
     }
 
-    private void OnAttackPerformed(InputAction.CallbackContext context)
-    {
-        GameEventBus.GetInstance().Publish(GameEventType.OnAttackInput,
-            new InputActionData("Attack"));
-    }
 
     private void OnLookPerformed(InputAction.CallbackContext context)
     {
@@ -205,6 +221,38 @@ public class InputManager :BaseManager<InputManager>
             GameEventBus.GetInstance().Publish(GameEventType.OnPrevWeapon, new InputActionData("PrevWeapon"));
 
         }
+    }
+
+    private void OnShootPerformed(InputAction.CallbackContext context)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnShoot,
+            new InputHoldingData(true));
+        
+    }
+    private void OnShootCanceled(InputAction.CallbackContext context)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnShoot,
+            new InputHoldingData(false));
+    }
+    private void OnReloadPerformed(InputAction.CallbackContext context)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnReload,
+            new InputActionData("Reload"));
+    }
+    private void OnAimPerformed(InputAction.CallbackContext context)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnAim,
+            new InputHoldingData(true));
+    }
+    private void OnAimCanceled(InputAction.CallbackContext context)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnAim,
+            new InputHoldingData(false));
+    }
+    private void OnInspectPerformed(InputAction.CallbackContext context)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnInspect,
+            new InputActionData("Inspect"));
     }
 
     #endregion

@@ -22,6 +22,13 @@
 
     //武器切换
     OnNextWeapon,     // 切换下一把武器
-    OnPrevWeapon      // 切换上一把武器
+    OnPrevWeapon,      // 切换上一把武器
+
+    //枪械相关
+    OnShoot,          // 射击事件
+    OnReload,         // 换弹事件
+    OnAim,            // 瞄准事件
+    OnInspect       // 检查枪械事件
+                     
 
 }

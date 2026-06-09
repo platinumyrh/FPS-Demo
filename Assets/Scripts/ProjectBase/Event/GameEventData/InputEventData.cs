@@ -40,14 +40,14 @@ public class InputActionData : GameEventData
     }
 }
 /// <summary>
-/// 奔跑输入数据
+/// 长按输入数据
 /// </summary>
-public class InputRunData : GameEventData
+public class InputHoldingData : GameEventData
 {
-    public bool IsRunning;
+    public bool IsHolding;
 
-    public InputRunData(bool isRunning)
+    public InputHoldingData(bool isHolding)
     {
-        IsRunning = isRunning;
+        IsHolding = isHolding;
     }
 }
