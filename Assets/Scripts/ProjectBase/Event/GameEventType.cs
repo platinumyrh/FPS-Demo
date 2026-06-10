@@ -28,7 +28,8 @@
     OnShoot,          // 射击事件
     OnReload,         // 换弹事件
     OnAim,            // 瞄准事件
-    OnInspect       // 检查枪械事件
-                     
+    OnInspect,       // 检查枪械事件
+    OnBulletHit,      // 子弹命中事件
+
 
 }

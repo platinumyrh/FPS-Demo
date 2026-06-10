@@ -33,6 +33,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float fireRate = 0.1f; // 射击间隔（秒），0.1秒一发等于每分钟600发
     private float fireTimer = 0f; // 射击冷却计时器
 
+    
+    // 新增：把手里的枪或者枪身上的 GunBase 脚本拖到这个槽位里（或者通过代码换枪时动态赋值）
+    
+    public GunBase currentWeapon { get; set; }
+
 
     private float cameraPitch = 0f;       // 累积相机的上下旋转量量值
     private bool isCursorLocked = true;   // 鼠标锁定状态变量
@@ -196,7 +201,7 @@ public class PlayerController : MonoBehaviour
         isShooting = data.IsHolding; // 这里的 IsRunning 代表按键是否按住
         if (!isShooting)
         {
-            Debug.Log("停止射击");
+            //Debug.Log("停止射击");
             animationController.StopShoot(); // 可选：通知动画停止
         }
     }
@@ -205,30 +210,38 @@ public class PlayerController : MonoBehaviour
     private void HandleContinuousShooting()
     {
         fireTimer = fireRate; // 重置冷却
-        Debug.Log("突突突！发射子弹！");
+       // Debug.Log("突突突！发射子弹！");
 
-        // 执行扣子弹、射线检测（Raycast）算伤害等核心逻辑...
-
-        // 触发开火动画表现
+        // 1. 触发玩家角色自身的双臂开火动画表现
         animationController.ApplyShoot();
+
+        // 2. 【核心联动】：通知当前手里的枪执行它自己的射击和枪支动画！
+        if (currentWeapon != null)
+        {
+            currentWeapon.FireWeapon();
+        }
     }
 
     public void OnReload(InputActionData data)
     {
-        Debug.Log($"玩家控制器接收到换弹事件，动作名称：{data.ActionName}");
-        animationController.ApplyReload(); // 触发换弹动画
+        animationController.ApplyReload(); // 角色播放换弹动画
+
+        if (currentWeapon != null)
+        {
+            currentWeapon.ReloadWeapon(); // 枪械播放换弹动画
+        }
     }
 
     public void OnAim(InputActionData data)
     {
-        Debug.Log($"玩家控制器接收到瞄准事件，动作名称：{data.ActionName}");
+       // Debug.Log($"玩家控制器接收到瞄准事件，动作名称：{data.ActionName}");
         animationController.ApplyAim(isAiming); // 触发瞄准动画
     }
 
     public void OnAimChange(InputHoldingData data)
     {
         isAiming = data.IsHolding;
-        Debug.Log(isAiming ? "进入瞄准" : "退出瞄准");
+       // Debug.Log(isAiming ? "进入瞄准" : "退出瞄准");
 
         // 将最新的瞄准状态同步给动画控制器
         animationController.ApplyAim(isAiming);
@@ -236,7 +249,8 @@ public class PlayerController : MonoBehaviour
 
     public void OnInspect(InputActionData data)
     {
-        Debug.Log($"玩家控制器接收到检查枪械事件，动作名称：{data.ActionName}");
+      //  Debug.Log($"玩家控制器接收到检查枪械事件，动作名称：{data.ActionName}");
+      animationController.ApplyInspect(); // 触发检查枪械动画
     }
 
     /// <summary>

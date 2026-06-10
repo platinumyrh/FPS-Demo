@@ -15,17 +15,31 @@ public class PlayerWeaponManager : MonoBehaviour
     private Animator playerAnimator;     // 玩家手部的 Animator 组件
     private int currentWeaponIndex = -1;  // 当前装备的武器索引
     private bool isSwitching = false;     // 状态锁：防止在切枪动画播放时连续滚动重复触发
+
+    private PlayerController playerController; // 引用玩家控制器，方便后续扩展（如切枪时调整移动速度等）
     void Start()
     {
         playerAnimator = GetComponentInChildren<Animator>();
 
-        // 游戏开始，直接初始化第一把枪（不需要播放切枪动作）
+        playerController = GetComponent<PlayerController>();
+
         if (weaponSlots.Count > 0 && playerAnimator != null)
         {
             currentWeaponIndex = 0;
-            weaponSlots[currentWeaponIndex].gameObject.SetActive(true);
-            playerAnimator.runtimeAnimatorController = weaponSlots[currentWeaponIndex].GetWeaponOverrideController();
-            playerAnimator.SetBool("Holstered", false); // 确保是拔出状态
+            InitializeWeapon(currentWeaponIndex);
+        }
+    }
+
+    private void InitializeWeapon(int index)
+    {
+        weaponSlots[index].gameObject.SetActive(true);
+        playerAnimator.runtimeAnimatorController = weaponSlots[index].GetWeaponOverrideController();
+        playerAnimator.SetBool("Holstered", false);
+
+        // 【核心解耦点】：主动把当前枪“喂”给 Controller
+        if (playerController != null)
+        {
+            playerController.currentWeapon = weaponSlots[index];
         }
     }
 
@@ -49,30 +63,25 @@ public class PlayerWeaponManager : MonoBehaviour
     ///</summary>
     public void SwitchWeapon(int index)
     {
-        // 越界检查（如果按了没有的武器槽位，直接返回）
-        if (index < 0 || index >= weaponSlots.Count) return;
-        if (index == currentWeaponIndex) return; // 已经是这把枪了，不重复切
+        if (index < 0 || index >= weaponSlots.Count || index == currentWeaponIndex) return;
 
-        //合法切换，先禁用当前武器（如果有的话）
         if (currentWeaponIndex >= 0 && currentWeaponIndex < weaponSlots.Count)
         {
             weaponSlots[currentWeaponIndex].gameObject.SetActive(false);
         }
-        //更新索引并启用新武器
+
         currentWeaponIndex = index;
         GunBase newWeapon = weaponSlots[currentWeaponIndex];
         newWeapon.gameObject.SetActive(true);
 
-        //切换动画控制器
+        // 切换动画控制器
         AnimatorOverrideController newOverrider = newWeapon.GetWeaponOverrideController();
-        if (newOverrider != null)
+        if (newOverrider != null) playerAnimator.runtimeAnimatorController = newOverrider;
+
+        // 【核心解耦点】：切枪时，再次更新 Controller 手里的枪
+        if (playerController != null)
         {
-            playerAnimator.runtimeAnimatorController = newOverrider;
-            Debug.Log($"[切枪成功] 已动态切换动画集为: {newOverrider.name}");
-        }
-         else
-        {
-            Debug.LogWarning($"[PlayerWeaponManager] 武器 {newWeapon.name} 没有设置动画重写控制器！");
+            playerController.currentWeapon = newWeapon;
         }
     }
 

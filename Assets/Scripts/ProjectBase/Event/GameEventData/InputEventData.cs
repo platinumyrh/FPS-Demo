@@ -51,3 +51,18 @@ public class InputHoldingData : GameEventData
         IsHolding = isHolding;
     }
 }
+
+
+public class BulletHitEventData : GameEventData
+{
+    public RaycastHit HitInfo; // 射线检测结果
+    public float Damage;         // 造成的伤害值
+    public GunBase sourceWeapon;     // 造成伤害的枪械
+
+    public BulletHitEventData(RaycastHit hitInfo, float damage, GunBase source)
+    {
+        HitInfo = hitInfo;
+        Damage = damage;
+        sourceWeapon = source;
+    }
+}

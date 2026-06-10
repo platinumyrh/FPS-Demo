@@ -210,13 +210,13 @@ public class InputManager :BaseManager<InputManager>
         // 我们主要关心 y 轴（上下滚动）
         if (scrollValue.y > 0)
         {
-            Debug.Log("滚轮向上：切下一把武器");
+            //Debug.Log("滚轮向上：切下一把武器");
             // 可以通过 GameEventBus 发布一个切换下一把枪的事件
             GameEventBus.GetInstance().Publish(GameEventType.OnNextWeapon,new InputActionData("NextWeapon"));
         }
         else if (scrollValue.y < 0)
         {
-            Debug.Log("滚轮向下：切上一把武器");
+           // Debug.Log("滚轮向下：切上一把武器");
             // 可以通过 GameEventBus 发布一个切换上一把枪的事件
             GameEventBus.GetInstance().Publish(GameEventType.OnPrevWeapon, new InputActionData("PrevWeapon"));
 

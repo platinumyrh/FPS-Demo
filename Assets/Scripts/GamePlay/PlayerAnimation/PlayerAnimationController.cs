@@ -6,6 +6,10 @@ using UnityEngine.Experimental.GlobalIllumination;
 public class PlayerAnimationController : MonoBehaviour
 {
     private Animator animator;
+
+
+    // 新增：用于在 Update 中记录当前的瞄准目标值
+    private float targetAimValue = 0f;
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -14,7 +18,13 @@ public class PlayerAnimationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+        // 每帧在 Update 里，让当前的 Aiming 参数平滑逼近我们的 targetAimValue目标
+        float currentAim = animator.GetFloat("Aiming");
+
+        // 0.05f 是过渡时间，Time.deltaTime / 0.05f 可以做到匀速且精准到达 0 或 1
+        float nextAim = Mathf.MoveTowards(currentAim, targetAimValue, Time.deltaTime / 0.05f);
+
+        animator.SetFloat("Aiming", nextAim);
     }
 
     public void ApplyLocomotion(Vector2 inputDir,bool isRunning)
@@ -33,9 +43,12 @@ public class PlayerAnimationController : MonoBehaviour
     public void ApplyAim(bool isAiming)
     {
         // 如果是 1D/2D 混合树控制瞄准姿态：
-        float targetValue = isAiming ? 1f : 0f;
-        animator.SetFloat("Aiming", targetValue, 0.05f, Time.deltaTime); // 用 dampTime 让举枪动作平滑
+        targetAimValue = isAiming ? 1f : 0f;
+
+        animator.SetBool("Aim", isAiming);
     }
+
+
 
     public void ApplyShoot()
     {
@@ -43,7 +56,7 @@ public class PlayerAnimationController : MonoBehaviour
     }
     public void StopShoot()
     {
-        animator.Play("Idle"); // 直接切回待机动画，假设动画状态机里有个叫 Idle 的状态
+        //animator.Play("Idle"); // 直接切回待机动画，假设动画状态机里有个叫 Idle 的状态
     }
      public void ApplyReload()
     {
@@ -51,7 +64,7 @@ public class PlayerAnimationController : MonoBehaviour
     }
      public void ApplyInspect()
     {
-        
+       animator.CrossFade("Inspect", 0.1f); // 平滑过渡到检查枪械动画   
     }
 
 
