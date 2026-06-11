@@ -7,12 +7,15 @@ public class PlayerAnimationController : MonoBehaviour
 {
     private Animator animator;
 
+    
+
 
     // 新增：用于在 Update 中记录当前的瞄准目标值
     private float targetAimValue = 0f;
     void Start()
     {
         animator = GetComponent<Animator>();
+      
     }
 
     // Update is called once per frame
@@ -20,11 +23,11 @@ public class PlayerAnimationController : MonoBehaviour
     {
         // 每帧在 Update 里，让当前的 Aiming 参数平滑逼近我们的 targetAimValue目标
         float currentAim = animator.GetFloat("Aiming");
-
         // 0.05f 是过渡时间，Time.deltaTime / 0.05f 可以做到匀速且精准到达 0 或 1
         float nextAim = Mathf.MoveTowards(currentAim, targetAimValue, Time.deltaTime / 0.05f);
-
         animator.SetFloat("Aiming", nextAim);
+
+
     }
 
     public void ApplyLocomotion(Vector2 inputDir,bool isRunning)
@@ -47,7 +50,10 @@ public class PlayerAnimationController : MonoBehaviour
 
         animator.SetBool("Aim", isAiming);
     }
-
+    public void ApplyCrouch(bool isCrouching)
+    {
+        animator.SetBool("Crouching", isCrouching);
+    }
 
 
     public void ApplyShoot()
@@ -58,16 +64,36 @@ public class PlayerAnimationController : MonoBehaviour
     {
         //animator.Play("Idle"); // 直接切回待机动画，假设动画状态机里有个叫 Idle 的状态
     }
-     public void ApplyReload()
+     public void ApplyReload(bool isEmpty )
     {
-        animator.CrossFade("Reload", 0.1f); // 平滑过渡到换弹动画
+        if (isEmpty)
+        {
+            animator.CrossFade("Reload Empty", 0.1f); // 平滑过渡到空弹换弹动画
+        }
+        else
+        {
+            animator.CrossFade("Reload", 0.1f); // 平滑过渡到换弹动画
+        }
+        
     }
      public void ApplyInspect()
     {
        animator.CrossFade("Inspect", 0.1f); // 平滑过渡到检查枪械动画   
     }
 
+    /// <summary>
+    /// 动画事件回调：由换弹动画结束时通过 Animation Event 自动调用
+    /// </summary>
+    public void OnAnimationEndedReload()
+    {
+        Debug.Log($"[PlayerController] 收到换弹动画结束事件，正在通知武器...");
 
+        // 往事件总线广播：换弹动画结束了
+        GameEventBus.GetInstance().Publish<InputActionData>(
+            GameEventType.OnReloadComplete, // 你可以自定义一个这样的枚举事件
+            new InputActionData("ReloadComplete")
+        );
+    }
 
 
 

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -18,11 +18,17 @@ public class GunBase : MonoBehaviour
 
     [Header("枪械属性")]
     private int currentAmmoInClip; // 当前弹夹中的子弹数量
-    private int totalAmmo; // 总弹药数量
     private int maxAmmoInClip; // 弹夹容量
+    private int totalAmmo; // 总弹药数量
+   
     [SerializeField] protected float weaponDamage = 25f; // 子弹伤害
     [SerializeField] protected float fireRange = 100f;   // 最大射程
     [SerializeField] protected LayerMask hitLayers = 1<<0;     // 射线可以击中的层级（防止自己打自己）
+
+    public bool isReloading { get; private set; } = false; // 是否正在换弹
+    public bool isInspecting { get; private set; } = false; // 新增：是否正在检视
+
+    public bool isEmpty => currentAmmoInClip <= 0; // 是否弹夹空了
 
     [Header("开火相关")]
     //private float fireRate; // 射速（每秒发射的子弹数量）
@@ -44,6 +50,12 @@ public class GunBase : MonoBehaviour
         {
             Debug.LogError($"[GunBase] 在 {gameObject.name} 的固定路径下未找到 SOCKET_Muzzle，请检查拼写！");
         }
+
+       
+        maxAmmoInClip = 30; // 假设每个弹夹30发
+        currentAmmoInClip = maxAmmoInClip; // 初始化时弹夹装满
+        totalAmmo = 90; // 假设总弹药90发（3个弹夹）
+
     }
    
 
@@ -51,14 +63,29 @@ public class GunBase : MonoBehaviour
     public virtual void FireWeapon()
     {
         // 执行减少弹药等逻辑...
-
-        // 播放枪械自身的动画
-        if (gunAnimController != null)
+        if (currentAmmoInClip != 0)
         {
-            gunAnimController.PlayShoot();
-        }
+            currentAmmoInClip--;
+            Debug.Log($"[射击] {gameObject.name} 开火！剩余弹夹内子弹: {currentAmmoInClip}/{maxAmmoInClip}，总弹药: {totalAmmo}");
 
-        ExcuteShotgunSpread();
+            // 播放枪械自身的动画
+            if (gunAnimController != null)
+            {
+                gunAnimController.PlayShoot();
+            }
+
+            ExcuteShotgunSpread();
+        }
+        else
+        {
+            Debug.Log($"[射击] {gameObject.name} 弹夹空了！请换弹！");
+            // 可以在这里播放空弹夹的提示音效或动画
+        }
+        // 在 GunBase.cs 射击、切枪、换弹成功的数据结算完后：
+        WeaponUIData uiData = new WeaponUIData(gameObject.name, currentAmmoInClip, maxAmmoInClip, totalAmmo);
+        GameEventBus.GetInstance().Publish<WeaponUIData>(GameEventType.OnWeaponUIUpdate, uiData);
+
+
     }
 
 
@@ -107,7 +134,7 @@ public class GunBase : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, fireRange, hitLayers))
         {
-            Debug.Log($"[命中] {hit.collider.name}，落点: {hit.point}");
+           // Debug.Log($"[命中] {hit.collider.name}，落点: {hit.point}");
 
             // 绘制绿色击中辅助线
             DrawDebugLaser(ray.origin, hit.point, Color.green, 0.5f);
@@ -127,11 +154,49 @@ public class GunBase : MonoBehaviour
 
     public virtual void ReloadWeapon()
     {
+        // 拦截：如果正在换弹、正在检视、子弹满了、或者没后备弹药，则不触发
+        if (isReloading || isInspecting || totalAmmo <= 0 || currentAmmoInClip == maxAmmoInClip) return;
+
+        //Debug.Log($"[GunBase] 开始换弹动画");
+        isReloading = true;
+
         if (gunAnimController != null)
         {
-            gunAnimController.PlayReload();
+            gunAnimController.PlayReload(isEmpty);
         }
     }
+
+    public virtual void InspectWeapon()
+    {
+        // 拦截：如果正在换弹或已经在检视，则不触发
+        if (isReloading || isInspecting) return;
+
+        Debug.Log($"[GunBase] 开始检视武器");
+        isInspecting = true;
+
+        if (gunAnimController != null)
+        {
+            gunAnimController.PlayInspect();
+        }
+    }
+    public virtual void OnReloadComplete()
+    {
+        if (!isReloading) return; // 安全锁
+
+        int ammoNeeded = maxAmmoInClip - currentAmmoInClip;
+        int ammoToReload = Mathf.Min(ammoNeeded, totalAmmo);
+
+        currentAmmoInClip += ammoToReload;
+        totalAmmo -= ammoToReload;
+
+        isReloading = false; // 解开锁，允许再次开火
+        Debug.Log($"[GunBase] 换弹数据结算完毕！当前子弹：{currentAmmoInClip}/{maxAmmoInClip}");
+
+        // 通知 UI 更新弹药显示
+        WeaponUIData uiData = new WeaponUIData(gameObject.name, currentAmmoInClip, maxAmmoInClip, totalAmmo);
+        GameEventBus.GetInstance().Publish<WeaponUIData>(GameEventType.OnWeaponUIUpdate, uiData);
+    }
+
 
     public AnimatorOverrideController GetWeaponOverrideController() => weaponOverrideController;
 

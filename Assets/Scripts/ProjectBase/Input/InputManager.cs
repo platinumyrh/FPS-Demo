@@ -91,6 +91,9 @@ public class InputManager :BaseManager<InputManager>
         // 视角
         player.Look.performed += OnLookPerformed;
 
+        //下蹲
+        player.Crouch.performed += OnCrouchPerformed;
+
         // 交互
         player.Interact.performed += OnInteractPerformed;
 
@@ -253,6 +256,12 @@ public class InputManager :BaseManager<InputManager>
     {
         GameEventBus.GetInstance().Publish(GameEventType.OnInspect,
             new InputActionData("Inspect"));
+    }
+
+    private void OnCrouchPerformed(InputAction.CallbackContext context)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnCrouchInput,
+            new InputActionData("Crouch"));
     }
 
     #endregion

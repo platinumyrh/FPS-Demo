@@ -33,10 +33,21 @@ public class GunAnimationController : MonoBehaviour
         //Debug.Log("[动画] 播放射击动画");
     }
 
-    public void PlayReload()
+    public void PlayReload(bool isEmpty)
     {
-        gunAnimator.CrossFade("Reload", 0.1f);
-        Debug.Log("[动画] 播放换弹动画");
+        if (isEmpty)
+        {
+            gunAnimator.CrossFade("Reload Empty", 0.1f);
+            Debug.Log("[动画] 播放空弹换弹动画");
+            return;
+        }
+        else
+        {
+            gunAnimator.CrossFade("Reload", 0.1f);
+            Debug.Log("[动画] 播放换弹动画");
+        }
+           
+        
     }
 
     public void PlayInspect()

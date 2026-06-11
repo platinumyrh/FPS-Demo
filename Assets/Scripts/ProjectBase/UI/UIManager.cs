@@ -19,6 +19,9 @@ public class UIManager : BaseManager<UIManager>
 {
     public Dictionary<string, BasePanel> panelDic = new Dictionary<string, BasePanel>();
 
+    // ====== 新增：用来接管并存储当前各活跃面板对应的纯 C# Controller 实例 ======
+    private Dictionary<string, object> controllerDic = new Dictionary<string, object>();
+
     private Transform canvas;
 
     private Transform bottom;
@@ -84,6 +87,8 @@ public class UIManager : BaseManager<UIManager>
             if (panel != null)
             {
                 panelDic[panelName] = panel;
+                // ====== 核心注入：在 View 实例化完毕的一瞬间，为其匹配并绑定其专属 Controller ======
+                BindControllerForPanel(panelName, panel);
             }
         });
     }
@@ -142,10 +147,26 @@ public class UIManager : BaseManager<UIManager>
         //}
     }
 
+    /// <summary>
+    /// 关闭面板
+    /// 核心重构：在彻底销毁 UI 游戏对象前，必须先调用并卸载其对应的 Controller，防止内存泄漏！
+    /// </summary>
     public void ClosePanel(string panelName)
     {
         if (panelDic.TryGetValue(panelName, out BasePanel panel))
         {
+            // 1. 优先解除并销毁 C# 控制器，触发其 UnsubscribeAllEvents
+            if (controllerDic.TryGetValue(panelName, out object controllerObj))
+            {
+                // 使用反射动态寻找并执行它的 Destroy 方法，彻底断开 EventBus 订阅与 Mono 监听
+                var destroyMethod = controllerObj.GetType().GetMethod("Destroy");
+                destroyMethod?.Invoke(controllerObj, null);
+
+                // 从接管字典移除
+                controllerDic.Remove(panelName);
+            }
+
+            // 2. 物理销毁游戏场景内的 UI 物体
             GameObject.Destroy(panel.gameObject);
             panelDic.Remove(panelName);
         }
@@ -161,5 +182,27 @@ public class UIManager : BaseManager<UIManager>
 
         Debug.LogWarning($"GetPanel 找不到面板: {panelName}");
         return null;
+    }
+
+    /// <summary>
+    /// 控制器注入路由：根据面板预制体的路径/名字，在这里 new 出它专属的 C# Controller
+    /// </summary>
+    private void BindControllerForPanel(string panelName, BasePanel panel)
+    {
+        // 路由匹配：如果加载的是武器面板
+        if (panelName == "P_LPSP_UI_Canvas" && panel is WeaponStatusPanel weaponView)
+        {
+            // 1. 动态生成控制器（其内部会自动创建与之绑定的 WeaponModel）
+            WeaponUIController weaponController = new WeaponUIController(weaponView);
+
+            // 2. 框架约束：必须手动调用 Init() 来开始让它干活、绑定事件、绑定 MonoManager
+            weaponController.Init();
+
+            // 3. 丢进字典中统一接管
+            controllerDic[panelName] = weaponController;
+        }
+
+        // 以后你每增加一个新系统面板（例如背包 Panel），就在这里加一条路由：
+        // else if (panelName == "UI/BagPanel" && panel is BagPanel bagView) { ... }
     }
 }

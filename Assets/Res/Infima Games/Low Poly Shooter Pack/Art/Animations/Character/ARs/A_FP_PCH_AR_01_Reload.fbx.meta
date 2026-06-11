@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: bd8d61cb762c49d489995fa1062356fe
 ModelImporter:
-  serializedVersion: 20200
+  serializedVersion: 22200
   internalIDToNameTable:
   - first:
       1: 100000
@@ -455,6 +455,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 0
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -552,7 +553,7 @@ ModelImporter:
       - time: 0.7478006
         functionName: OnAnimationEndedReload
         data: 
-        objectReferenceParameter: {instanceID: 0}
+        objectReferenceParameter: {fileID: 11500000, guid: f35180e57fbd19141b4c6bb6eff88fb3, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
@@ -575,10 +576,12 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
     fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
@@ -590,6 +593,7 @@ ModelImporter:
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -600,6 +604,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -672,8 +677,7 @@ ModelImporter:
     - name: lowerarm_twist_01_l
       parentName: lowerarm_l
       position: {x: -0.14000016, y: -0.000000029802322, z: -0.000000202097}
-      rotation: {x: -0.000000026077032, y: -0.0000000055879354, z: 0.00000002607703,
-        w: 1}
+      rotation: {x: -0.000000026077032, y: -0.0000000055879354, z: 0.00000002607703, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1}
     - name: hand_l
       parentName: lowerarm_l
@@ -758,8 +762,7 @@ ModelImporter:
     - name: upperarm_twist_01_l
       parentName: upperarm_l
       position: {x: -0.004999994, y: 0.00000004004687, z: 0.000000016065314}
-      rotation: {x: 0.00000008754432, y: -0.000000042724427, z: 0.00000008055941,
-        w: 1}
+      rotation: {x: 0.00000008754432, y: -0.000000042724427, z: 0.00000008055941, w: 1}
       scale: {x: 0.99999994, y: 0.99999994, z: 1}
     - name: clavicle_r
       parentName: spine_03
@@ -969,8 +972,7 @@ ModelImporter:
     - name: ik_hand_r
       parentName: ik_hand_gun
       position: {x: -0.000000110594556, y: -0.00000004573667, z: -0.000000052852556}
-      rotation: {x: 0.000000063329935, y: -0.000000055879354, z: 0.0000000027939677,
-        w: 1}
+      rotation: {x: 0.000000063329935, y: -0.000000055879354, z: 0.0000000027939677, w: 1}
       scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5
@@ -984,13 +986,14 @@ ModelImporter:
     hasTranslationDoF: 1
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 2c56a83c3431ae248a78a389fa783ea8,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
   avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

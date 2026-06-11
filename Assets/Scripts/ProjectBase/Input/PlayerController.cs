@@ -1,6 +1,7 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Purchasing;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;         // 移动速度
     [SerializeField] private float runMultiplier = 1.5f;    // 奔跑时的速度倍率
     [SerializeField] private bool isRunning;           // 是否正在奔跑
+    [SerializeField] private bool isCrouching;          // 是否正在蹲下（后续功能预留）
     private Vector2 currentInputMove; // 缓存当前的移动输入，在 Update 中统一处理
 
     [Header("跳跃相关")]
@@ -26,6 +28,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gravity = -9.81f;      // 重力加速度
     [SerializeField] private bool isGrounded;           // 是否在地面上
     private float verticalVelocity;   // 当前垂直方向的速度（Y轴速度）
+
+    [Header("下蹲设置")]
+    [SerializeField] private float standHeight = 2.0f;
+    [SerializeField] private float crouchHeight = 1.2f;
+    [SerializeField] private float crouchSpeed = 8f;
+    // 建议在 Player 下单独建一个 CameraRoot 空物体放相机，或者直接引用相机
+    [SerializeField] private Transform cameraTransform;
+    private float targetCameraY;
+    private Vector3 cameraOriginLocalPos;
+    private float animatorOriginLocalY; // 新增：用来记录身体的初始 Y 轴坐标
 
     [Header("战斗相关")]
     [SerializeField] private bool isAiming = false;
@@ -35,10 +47,7 @@ public class PlayerController : MonoBehaviour
 
     
     // 新增：把手里的枪或者枪身上的 GunBase 脚本拖到这个槽位里（或者通过代码换枪时动态赋值）
-    
     public GunBase currentWeapon { get; set; }
-
-
     private float cameraPitch = 0f;       // 累积相机的上下旋转量量值
     private bool isCursorLocked = true;   // 鼠标锁定状态变量
 
@@ -57,6 +66,12 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponentInParent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         animationController = GetComponentInChildren<PlayerAnimationController>();
+
+        if (cameraTransform == null) cameraTransform = playerCamera.transform;
+        cameraOriginLocalPos = cameraTransform.localPosition;
+        targetCameraY = cameraOriginLocalPos.y;
+        animatorOriginLocalY = animator.transform.localPosition.y;
+
         SetCursorState(true); // 游戏开始时默认锁定鼠标
 
 
@@ -73,7 +88,9 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnReload, OnReload);
         GameEventBus.GetInstance().Subscribe<InputHoldingData>(GameEventType.OnAim, OnAimChange);
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
+        GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnCrouchInput, OnCrouch);
 
+        GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnReloadComplete, HandleReloadCompleteLogic);
 
     }
     private void OnDisable()
@@ -88,10 +105,18 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnReload, OnReload);
         GameEventBus.GetInstance().Unsubscribe<InputHoldingData>(GameEventType.OnAim, OnAimChange);
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
+        GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnCrouchInput, OnCrouch);
+
+        GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnReloadComplete, HandleReloadCompleteLogic);
     }
 
     private void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            UIManager.GetInstance().ShowPanel("P_LPSP_UI_Canvas", UI_Layer.Bottom);
+        }
         // 监听 Esc 键切换鼠标锁定状态
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -111,12 +136,16 @@ public class PlayerController : MonoBehaviour
             fireTimer -= Time.deltaTime;
         }
 
-        // 如果玩家长按着开火键，且冷却好了
-        if (isShooting && fireTimer <= 0f)
+        // 【核心修正】：如果正在换弹或检视，即使按住开火键，也绝对不能执行开火逻辑
+        bool canFire = currentWeapon != null && !currentWeapon.isReloading && !currentWeapon.isInspecting;
+
+        if (isShooting && fireTimer <= 0f && canFire)
         {
             HandleContinuousShooting();
         }
 
+
+        HandleCrouchingLogic();
         ApplyMovementAndGravity(); // 每帧调用一次，处理移动和重力逻辑
     }
 
@@ -143,7 +172,47 @@ public class PlayerController : MonoBehaviour
     }
     private void OnRun(InputHoldingData data)
     {
-        isRunning = data.IsHolding;
+        // 拦截：如果玩家正在瞄准，或者正在换弹/检视，不能进入奔跑状态
+        bool canRun = !isAiming && (currentWeapon == null || (!currentWeapon.isReloading && !currentWeapon.isInspecting));
+
+        if (canRun)
+        {
+            isRunning = data.IsHolding;
+        }
+        else
+        {
+            isRunning = false;
+        }
+    }
+    private void OnCrouch(InputActionData data)
+    {
+        isCrouching = !isCrouching;
+
+        // 1. 计算碰撞体目标高度
+        float targetHeight = isCrouching ? crouchHeight : standHeight;
+
+        // 2. 物理碰撞体瞬间改变高度，并调整中心点防止浮空
+        characterController.height = targetHeight;
+        characterController.center = new Vector3(0, targetHeight / 2f, 0);
+
+        // 3. 通知动画状态机切换到下蹲状态
+        animationController.ApplyCrouch(isCrouching);
+    }
+
+    private void HandleCrouchingLogic()
+    {
+        // 只平滑移动身体（Animator），相机因为是其子物体，会自动完美跟随
+        if (animator != null)
+        {
+            // 站立时回到 animatorOriginLocalY；下蹲时在初始 Y 值的技术上再往下沉
+            float targetAnimatorY = isCrouching ? animatorOriginLocalY - (standHeight - crouchHeight) / 2f : animatorOriginLocalY;
+
+            Vector3 currentAnimPos = animator.transform.localPosition;
+            float nextAnimY = Mathf.MoveTowards(currentAnimPos.y, targetAnimatorY, crouchSpeed * Time.deltaTime);
+
+            // 保持 X 和 Z 不变，只平滑改变 Y
+            animator.transform.localPosition = new Vector3(currentAnimPos.x, nextAnimY, currentAnimPos.z);
+        }
     }
     /// <summary>
     /// 每帧执行：将水平移动、重力、跳跃速度结合，最终传给 CharacterController
@@ -190,10 +259,10 @@ public class PlayerController : MonoBehaviour
         animationController.ApplyLocomotion(currentInputMove, actualRunning);
     }
 
-   
+    #region 枪械相关逻辑
     public void OnShoot(InputActionData data)
     {
-        Debug.Log($"玩家控制器接收到射击事件，动作名称：{data.ActionName}");
+       // Debug.Log($"玩家控制器接收到射击事件，动作名称：{data.ActionName}");
     }
 
     public void OnShootChange(InputHoldingData data)
@@ -209,27 +278,56 @@ public class PlayerController : MonoBehaviour
     // 执行单发开火逻辑
     private void HandleContinuousShooting()
     {
-        fireTimer = fireRate; // 重置冷却
-       // Debug.Log("突突突！发射子弹！");
+        if (currentWeapon == null) return;
 
-        // 1. 触发玩家角色自身的双臂开火动画表现
-        animationController.ApplyShoot();
+        // 状态互斥拦截：换弹或检视时，禁止开火
+        if (currentWeapon.isReloading || currentWeapon.isInspecting) return;
 
-        // 2. 【核心联动】：通知当前手里的枪执行它自己的射击和枪支动画！
-        if (currentWeapon != null)
+        // 动作冲突打断：如果在开火时玩家正在奔跑，强制中止奔跑状态（开火权重更高）
+        if (isRunning)
         {
+            isRunning = false;
+        }
+
+        fireTimer = fireRate; // 重置冷却
+
+        // 触发开火动画与枪械逻辑
+        if (!currentWeapon.isEmpty)
+        {
+            animationController.ApplyShoot();
             currentWeapon.FireWeapon();
+        }
+        else
+        {
+            Debug.Log($"[射击] {currentWeapon.gameObject.name} 弹夹空了！");
+            // 自动触发换弹（可选体验优化）：
+            // OnReload(new InputActionData("AutoReload")); 
         }
     }
 
     public void OnReload(InputActionData data)
     {
-        animationController.ApplyReload(); // 角色播放换弹动画
+        if (currentWeapon == null) return;
 
-        if (currentWeapon != null)
-        {
-            currentWeapon.ReloadWeapon(); // 枪械播放换弹动画
-        }
+        // 拦截：如果已经在换弹，或者子弹是满的，则不执行
+        if (currentWeapon.isReloading || currentWeapon.isEmpty == false && currentWeapon.isReloading) return;
+
+        // 副作用：换弹时强制退出瞄准（枪都放下掏弹夹了，无法瞄准）
+        //if (isAiming)
+        //{
+        //    isAiming = false;
+        //    animationController.ApplyAim(false); // 通知动画恢复常规持枪
+        //}
+
+        // 副作用：换弹时不能全力奔跑
+        //if (isRunning)
+        //{
+        //    isRunning = false;
+        //}
+
+        // 执行换弹
+        animationController.ApplyReload(currentWeapon.isEmpty);
+        currentWeapon.ReloadWeapon();
     }
 
     public void OnAim(InputActionData data)
@@ -240,10 +338,21 @@ public class PlayerController : MonoBehaviour
 
     public void OnAimChange(InputHoldingData data)
     {
-        isAiming = data.IsHolding;
-       // Debug.Log(isAiming ? "进入瞄准" : "退出瞄准");
+        // 如果玩家正在全力奔跑，或者武器正在换弹/检视，直接拦截瞄准输入
+        if (currentWeapon != null && (currentWeapon.isReloading || currentWeapon.isInspecting))
+        {
+            isAiming = false;
+            animationController.ApplyAim(false);
+            return;
+        }
 
-        // 将最新的瞄准状态同步给动画控制器
+        // 如果按住瞄准时在奔跑，瞄准会打断奔跑
+        isAiming = data.IsHolding;
+        if (isAiming && isRunning)
+        {
+            isRunning = false; // 瞄准打断奔跑
+        }
+
         animationController.ApplyAim(isAiming);
     }
 
@@ -253,6 +362,17 @@ public class PlayerController : MonoBehaviour
       animationController.ApplyInspect(); // 触发检查枪械动画
     }
 
+    #endregion
+
+    #region 枪械动画事件回调
+    private void HandleReloadCompleteLogic(InputActionData data)
+    {
+        if (currentWeapon != null)
+        {
+            currentWeapon.OnReloadComplete();
+        }
+    }
+    #endregion
     /// <summary>
     /// 处理视角调整逻辑
     /// </summary>

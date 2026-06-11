@@ -13,6 +13,7 @@
     OnAttackInput,
     OnInteractInput,
     OnRunInput,
+    OnCrouchInput,
 
     //瞄准/视角
     OnLookInput,
@@ -30,6 +31,10 @@
     OnAim,            // 瞄准事件
     OnInspect,       // 检查枪械事件
     OnBulletHit,      // 子弹命中事件
+    OnReloadComplete, // 换弹完成事件
+
+    //UI相关
+    OnWeaponUIUpdate,
 
 
 }
