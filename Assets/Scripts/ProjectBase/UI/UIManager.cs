@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 public enum UI_Layer
 { 
     Bottom,
@@ -205,4 +206,7 @@ public class UIManager : BaseManager<UIManager>
         // 以后你每增加一个新系统面板（例如背包 Panel），就在这里加一条路由：
         // else if (panelName == "UI/BagPanel" && panel is BagPanel bagView) { ... }
     }
+
+
+   
 }

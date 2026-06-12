@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
     private float fireTimer = 0f; // 射击冷却计时器
 
     
-    // 新增：把手里的枪或者枪身上的 GunBase 脚本拖到这个槽位里（或者通过代码换枪时动态赋值）
+    
     public GunBase currentWeapon { get; set; }
     private float cameraPitch = 0f;       // 累积相机的上下旋转量量值
     private bool isCursorLocked = true;   // 鼠标锁定状态变量
@@ -75,12 +75,18 @@ public class PlayerController : MonoBehaviour
         SetCursorState(true); // 游戏开始时默认锁定鼠标
 
 
+        // 传入你的武器 UI 预制体名字（注意和 BindControllerForPanel 里的路由名字保持一致）
+        UIManager.GetInstance().ShowPanel("P_LPSP_UI_Canvas", UI_Layer.Bottom);
+
+       
+
+
     }
     private void OnEnable()
     {
         //订阅输入事件
         GameEventBus.GetInstance().Subscribe<InputEventData>(GameEventType.OnMoveInput, OnMove);
-        GameEventBus.GetInstance().Subscribe<InputEventData>(GameEventType.OnMoveCanceled, OnMove); // 复用同一个回调，输入取消时传入 Vector2.zero
+        GameEventBus.GetInstance().Subscribe<InputEventData>(GameEventType.OnMoveCanceled, OnMove); 
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnJumpInput, OnJump);
         GameEventBus.GetInstance().Subscribe<InputHoldingData>(GameEventType.OnShoot, OnShootChange);
         GameEventBus.GetInstance().Subscribe<InputLookData>(GameEventType.OnLookInput, OnLook);
@@ -113,10 +119,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            UIManager.GetInstance().ShowPanel("P_LPSP_UI_Canvas", UI_Layer.Bottom);
-        }
+       
         // 监听 Esc 键切换鼠标锁定状态
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -143,6 +146,7 @@ public class PlayerController : MonoBehaviour
         {
             HandleContinuousShooting();
         }
+        
 
 
         HandleCrouchingLogic();
@@ -313,11 +317,11 @@ public class PlayerController : MonoBehaviour
         if (currentWeapon.isReloading || currentWeapon.isEmpty == false && currentWeapon.isReloading) return;
 
         // 副作用：换弹时强制退出瞄准（枪都放下掏弹夹了，无法瞄准）
-        //if (isAiming)
-        //{
-        //    isAiming = false;
-        //    animationController.ApplyAim(false); // 通知动画恢复常规持枪
-        //}
+        if (isAiming)
+        {
+            isAiming = false;
+            animationController.ApplyAim(false); // 通知动画恢复常规持枪
+        }
 
         // 副作用：换弹时不能全力奔跑
         //if (isRunning)
@@ -371,6 +375,7 @@ public class PlayerController : MonoBehaviour
         {
             currentWeapon.OnReloadComplete();
         }
+        
     }
     #endregion
     /// <summary>

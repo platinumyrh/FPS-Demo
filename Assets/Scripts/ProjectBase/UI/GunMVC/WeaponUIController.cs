@@ -31,8 +31,34 @@ public class WeaponUIController : BaseController<WeaponStatusPanel,WeaponModel>
         // 3. 联动你的 MonoManager！让纯 C# 类拥有每帧更新的能力（例如制作低弹药呼吸闪烁特效）
         MonoManager.GetInstance().AddUpdateListener(UpdateFlashEffect);
 
-        // 初始拉取一次默认值进行刷新
-        RefreshView();
+        
+
+
+        MonoManager.GetInstance().StartCoroutine(DelayedPullInitialData());
+    }
+
+
+    /// <summary>
+    /// 延迟到下一帧再拉取初始数据，确保 WeaponStatusPanel.Start() 已执行完毕
+    /// </summary>
+    private System.Collections.IEnumerator DelayedPullInitialData()
+    {
+        yield return null;  // 等一帧，让 Unity 的 Start() 生命周期先跑完
+        TryPullInitialWeaponData();
+    }
+    /// <summary>
+    /// 主动从 PlayerController 拉取当前武器的初始数据，解决初始化时序竞态
+    /// </summary>
+    private void TryPullInitialWeaponData()
+    {
+        var playerCtrl = Object.FindObjectOfType<PlayerController>();
+        // 确保场景里有玩家，且玩家手里有枪
+        if (playerCtrl != null && playerCtrl.currentWeapon != null)
+        {
+            // 修复：利用 CreateUIData 拿到包含图片的完整结构，解决第一帧 UI 缺失图片问题
+            WeaponUIData data = playerCtrl.currentWeapon.CreateUIData();
+            model.SetWeaponData(data);
+        }
     }
 
     /// <summary>
@@ -43,7 +69,7 @@ public class WeaponUIController : BaseController<WeaponStatusPanel,WeaponModel>
         if (data == null || model == null) return;
 
         // Controller 将数据安全解包，喂给自己的 Model
-        model.SetWeaponData(data.WeaponName, data.CurrentAmmo, data.MaxAmmoInClip, data.TotalAmmo);
+        model.SetWeaponData(data);
     }
 
     /// <summary>
@@ -53,7 +79,8 @@ public class WeaponUIController : BaseController<WeaponStatusPanel,WeaponModel>
     {
         if (view != null && model != null)
         {
-            view.UpdateDisplay(model.WeaponName, model.CurrentAmmo, model.MaxAmmoInClip, model.TotalAmmo);
+            view.UpdateDisplay(model.WeaponName, model.CurrentAmmo, model.MaxAmmoInClip, model.TotalAmmo,model.WeaponBodySprite,model.GripSprite,
+                model.MagzineSprite,model.LazerSprite,model.MuzzleSprite,model.ScopeSprite);
         }
     }
 

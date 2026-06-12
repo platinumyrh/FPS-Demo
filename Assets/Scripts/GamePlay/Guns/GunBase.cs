@@ -41,7 +41,17 @@ public class GunBase : MonoBehaviour
     [Tooltip("子弹散射角度。0表示绝对精准，数值越大扩散范围越大（建议范围0.01 - 0.15）")]
     [SerializeField] protected float spreadAngle = 0.02f;
 
-    private void Awake()
+
+    [Header("UI 显示图标设置")]
+    [SerializeField] protected Sprite iconWeaponBody;
+    [SerializeField] protected Sprite iconGrip;
+    [SerializeField] protected Sprite iconMagazine;
+    [SerializeField] protected Sprite iconLaser;
+    [SerializeField] protected Sprite iconMuzzle;
+    [SerializeField] protected Sprite iconScope;
+
+
+    protected void Awake()
     {
         gunAnimController = GetComponent<GunAnimationController>();
         firePoint = FindChildDeep(transform, "SOCKET_Muzzle");
@@ -57,7 +67,31 @@ public class GunBase : MonoBehaviour
         totalAmmo = 90; // 假设总弹药90发（3个弹夹）
 
     }
-   
+    #region 数据封装与访问
+    public int GetCurrentAmmoInClip() => currentAmmoInClip;
+
+    public int GetMaxAmmoInClip() => maxAmmoInClip;
+
+    public int GetTotalAmmo() => totalAmmo;
+
+    #endregion
+
+    // 提供一个公共方法，用来一键打包当前枪械的所有 UI 数据
+    public WeaponUIData CreateUIData()
+    {
+        return new WeaponUIData(
+            gameObject.name,
+            currentAmmoInClip,
+            maxAmmoInClip,
+            totalAmmo,
+            iconWeaponBody,
+            iconGrip,
+            iconMagazine,
+            iconLaser,
+            iconMuzzle,
+            iconScope
+        );
+    }
 
     // 【核心改动】：取消事件总线订阅！改由外部普通公共函数让 PlayerController 调用
     public virtual void FireWeapon()
@@ -197,6 +231,16 @@ public class GunBase : MonoBehaviour
         GameEventBus.GetInstance().Publish<WeaponUIData>(GameEventType.OnWeaponUIUpdate, uiData);
     }
 
+
+    /// <summary>
+    /// 新增：由外部（如 PlayerController）在开局或切枪完毕时调用，强行刷新一次 UI 默认数据
+    /// </summary>
+    public void InitDefaultUIData()
+    {
+        // 拼装当前的初始数据，推送到事件总线
+        WeaponUIData uiData = new WeaponUIData(gameObject.name, currentAmmoInClip, maxAmmoInClip, totalAmmo);
+        GameEventBus.GetInstance().Publish<WeaponUIData>(GameEventType.OnWeaponUIUpdate, uiData);
+    }
 
     public AnimatorOverrideController GetWeaponOverrideController() => weaponOverrideController;
 

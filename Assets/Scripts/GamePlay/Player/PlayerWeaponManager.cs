@@ -41,6 +41,11 @@ public class PlayerWeaponManager : MonoBehaviour
         {
             playerController.currentWeapon = weaponSlots[index];
         }
+
+        GunBase gun = weaponSlots[index];
+        WeaponUIData weaponUIData = gun.CreateUIData();
+        GameEventBus.GetInstance().Publish<WeaponUIData>(GameEventType.OnWeaponUIUpdate, weaponUIData);
+       
     }
 
     private void OnEnable()
@@ -78,7 +83,11 @@ public class PlayerWeaponManager : MonoBehaviour
         AnimatorOverrideController newOverrider = newWeapon.GetWeaponOverrideController();
         if (newOverrider != null) playerAnimator.runtimeAnimatorController = newOverrider;
 
-        // 【核心解耦点】：切枪时，再次更新 Controller 手里的枪
+        // 修复：切枪时必须发送包含完整配件图标的 UIData，避免上一把枪的配件UI残留在屏幕上
+        WeaponUIData switchData = newWeapon.CreateUIData();
+        GameEventBus.GetInstance().Publish<WeaponUIData>(GameEventType.OnWeaponUIUpdate, switchData);
+
+        // 更新 Controller 手里的枪
         if (playerController != null)
         {
             playerController.currentWeapon = newWeapon;

@@ -1839,7 +1839,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5393623836368396329
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2344,10 +2344,6 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
       objectReference: {fileID: 0}
@@ -2370,6 +2366,18 @@ PrefabInstance:
     - target: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2426,13 +2434,63 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7507181300313349696, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4996861181152673717}
   m_SourcePrefab: {fileID: 100100000, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+--- !u!224 &616423070969548797 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 760032093091824315, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+  m_PrefabInstance: {fileID: 144630502796315974}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &2996333303111353434 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3140356866882423068, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+  m_PrefabInstance: {fileID: 144630502796315974}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &4791134741538401196 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4646680195316688618, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+  m_PrefabInstance: {fileID: 144630502796315974}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &4988693732225658297 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5132610617262956799, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
   m_PrefabInstance: {fileID: 144630502796315974}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &7270667370127131121 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7414980929962101943, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+  m_PrefabInstance: {fileID: 144630502796315974}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7651344407169176326 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7507181300313349696, guid: a5b4f9a9515729049a88bf3bf8072402, type: 3}
+  m_PrefabInstance: {fileID: 144630502796315974}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4996861181152673717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7651344407169176326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0c7506303804924fbc3f5f5e3dfe50d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  partsTop: {fileID: 2996333303111353434}
+  partsBottom: {fileID: 7270667370127131121}
+  partsLeft: {fileID: 616423070969548797}
+  partsRight: {fileID: 4791134741538401196}
+  baseSpread: 20
+  maxMovementSpread: 60
+  fireExpandForce: 15
+  maxFireSpread: 120
+  expandSpeed: 15
+  shrinkSpeed: 8
 --- !u!1001 &5621799692561502569
 PrefabInstance:
   m_ObjectHideFlags: 0
