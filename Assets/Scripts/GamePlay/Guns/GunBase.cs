@@ -1,7 +1,15 @@
-﻿﻿using System.Collections;
+﻿﻿﻿﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.UIElements;
 using UnityEngine;
+
+public enum WeaponType
+{
+    Primary,    // 主武器 (如步枪、散弹枪)
+    Secondary,  // 副武器 (如手枪)
+    Special     // 特殊武器 (如火箭筒、雷、近战)
+}
+
 
 
 /// <summary>
@@ -42,6 +50,10 @@ public class GunBase : MonoBehaviour
     [SerializeField] protected float spreadAngle = 0.02f;
 
 
+    [Header("武器类型（决定该枪归入主/副/特殊槽位）")]
+    [Tooltip("Primary=主武器(步枪/霰弹/SMG)  Secondary=副武器(手枪)  Special=特殊武器(火箭筒/狙击/近战)")]
+    [SerializeField] protected WeaponType weaponType = WeaponType.Primary;
+
     [Header("UI 显示图标设置")]
     [SerializeField] protected Sprite iconWeaponBody;
     [SerializeField] protected Sprite iconGrip;
@@ -49,6 +61,8 @@ public class GunBase : MonoBehaviour
     [SerializeField] protected Sprite iconLaser;
     [SerializeField] protected Sprite iconMuzzle;
     [SerializeField] protected Sprite iconScope;
+
+    
 
 
     protected void Awake()
@@ -73,6 +87,24 @@ public class GunBase : MonoBehaviour
     public int GetMaxAmmoInClip() => maxAmmoInClip;
 
     public int GetTotalAmmo() => totalAmmo;
+
+    public WeaponType GetWeaponType() => weaponType;
+
+    /// <summary>
+    /// 武器唯一标识（用于武器库模式中匹配"地上 Pickup"和"身上库中的枪"）。
+    /// 默认使用 GameObject.name，子类可覆盖。
+    /// </summary>
+    public virtual string GetWeaponId() => gameObject.name;
+
+    /// <summary>
+    /// 从外部数据恢复弹药状态（捡枪时由 PlayerWeaponManager 调用）
+    /// </summary>
+    public void RestoreAmmoState(int currentAmmo, int totalAmmo)
+    {
+        this.currentAmmoInClip = Mathf.Clamp(currentAmmo, 0, maxAmmoInClip);
+        this.totalAmmo = Mathf.Max(0, totalAmmo);
+        Debug.Log($"[GunBase] {gameObject.name} 弹药已恢复: {currentAmmoInClip}/{maxAmmoInClip}, 总计: {totalAmmo}");
+    }
 
     #endregion
 

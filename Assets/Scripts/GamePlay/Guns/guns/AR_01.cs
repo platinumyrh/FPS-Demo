@@ -4,5 +4,10 @@ using UnityEngine;
 
 public class AR_01 : GunBase
 {
-   
+
+    private void Start()
+    {
+        weaponType = WeaponType.Primary;
+    }
+
 }

@@ -32,6 +32,7 @@
     OnInspect,       // 检查枪械事件
     OnBulletHit,      // 子弹命中事件
     OnReloadComplete, // 换弹完成事件
+    OnDropInput,      //丢枪事件
 
     //UI相关
     OnWeaponUIUpdate,

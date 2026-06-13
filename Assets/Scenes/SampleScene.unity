@@ -302,41 +302,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!1 &245125664
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 245125665}
-  m_Layer: 5
-  m_Name: System
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &245125665
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 245125664}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1925489672}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &257174315 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 91241565878795807, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
@@ -392,7 +357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b3f676b0790a374d8b3670def9ce6e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponSlots:
+  weaponLibrary:
   - {fileID: 602273569}
   - {fileID: 1863538234}
   - {fileID: 1068058930}
@@ -411,41 +376,10 @@ MonoBehaviour:
   - {fileID: 1015371509}
   - {fileID: 1885098911}
   - {fileID: 1632483752}
---- !u!1 &395553915
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 395553916}
-  m_Layer: 5
-  m_Name: Top
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &395553916
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 395553915}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1925489672}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  defaultPrimaryId: P_LPSP_WEP_AR_01
+  defaultSecondaryId: P_LPSP_WEP_Handgun_01
+  defaultSpecialId: P_LPSP_WEP_GL_01
+  groundPickupPrefab: {fileID: 9024117657496060599, guid: a040088b38cac974c8535c02e6748765, type: 3}
 --- !u!1001 &403174185
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -634,6 +568,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 1
   iconWeaponBody: {fileID: 21300000, guid: bca66733c81204145bb9007230e68706, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: a8ab89d19f2582245b49a72e04d724d8, type: 3}
@@ -673,6 +608,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: bcc477d9e47ffcf41acc147a6fc51cf9, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 51d720b69910c244aa44a082bddf0155, type: 3}
@@ -722,6 +658,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 1
   iconWeaponBody: {fileID: 21300000, guid: 5de2ff934a8b3ea4ebfe923a6f958686, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: d96558cda50c04347b69780fd84c6fc9, type: 3}
@@ -1044,41 +981,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!1 &759107895
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 759107896}
-  m_Layer: 5
-  m_Name: Bottom
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &759107896
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759107895}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1925489672}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &802327019 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2311816663238519595, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
@@ -1279,6 +1181,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: 14fbfa1e6f824a6438189267b87f44b8, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 910872ed2b4e6a94d93164a7f44a4d4a, type: 3}
@@ -1323,6 +1226,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: 29d42a588ada78c47aa1735164b9b86d, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 8379dc4e93f66b04d98edb8e6ded955b, type: 3}
@@ -1763,6 +1667,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: 3ee33b9e6ad82e546a501e13d9410ab0, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 129fab05e8e650b4d8c3f2cb51ec656c, type: 3}
@@ -1961,6 +1866,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: c30ffab659c921b4db24b61094105fe6, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 068896edfce609e4c98c6ef4755801ba, type: 3}
@@ -2015,6 +1921,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: 1cd7ab0ded13ed149b0d00e451ed37d2, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: a7f382607f1fd934389a27b2ead39b33, type: 3}
@@ -2054,6 +1961,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 2
   iconWeaponBody: {fileID: 21300000, guid: a64d5ac6f08b42c40ab639b957890bce, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 49d212e2a1006424ba1faa898ec0b80a, type: 3}
@@ -2312,6 +2220,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 2
   iconWeaponBody: {fileID: 21300000, guid: 897505ac4e7e88f4487e9dd8aeffc8ca, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 0}
@@ -2356,6 +2265,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: edee8eb0c15b6064f943ec1b17135006, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: f47242017f7fb4147bfe824c60dd2dca, type: 3}
@@ -2395,6 +2305,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: 5a14700245f962143931ba8b9a4bf95a, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 8bce1303c6b5f14469edd2dd5ab51a4d, type: 3}
@@ -2449,6 +2360,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: 3ac6bd3c94406ee4b93468601b767738, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 51de79cbf170f52488db474948f8db57, type: 3}
@@ -2488,117 +2400,13 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: ccee2405335b2a849ad2b5d03c55d663, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: f015c22cd7388e94dad52f641453eed1, type: 3}
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 36da3e41d92f5284ab3e5da8fafa13e5, type: 3}
---- !u!1 &1925489668
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1925489672}
-  - component: {fileID: 1925489671}
-  - component: {fileID: 1925489670}
-  - component: {fileID: 1925489669}
-  m_Layer: 5
-  m_Name: Canvas
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1925489669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925489668}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
---- !u!114 &1925489670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925489668}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
-  m_PhysicalUnit: 3
-  m_FallbackScreenDPI: 96
-  m_DefaultSpriteDPI: 96
-  m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
---- !u!223 &1925489671
-Canvas:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925489668}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 0
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
-  m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_TargetDisplay: 0
---- !u!224 &1925489672
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925489668}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 759107896}
-  - {fileID: 2047639287}
-  - {fileID: 395553916}
-  - {fileID: 245125665}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
 --- !u!114 &1938462561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2632,6 +2440,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 1
   iconWeaponBody: {fileID: 21300000, guid: 17563cc85a0ef4a4cabf1ca909b2fa31, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: ba7316b137fe5a04995ea787d28785c0, type: 3}
@@ -2676,6 +2485,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: d046e191cca72234f808841e75fb8720, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 45d4f59d4af53e04a81b38d60a7c62b9, type: 3}
@@ -2720,47 +2530,13 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 1
   iconWeaponBody: {fileID: 21300000, guid: 9220d2cdf69e88c4eaebe5809c96284e, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 7e999aeca5adbec4792388be305fe916, type: 3}
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 42c5ed8b34cd15042a6679651d4d9102, type: 3}
---- !u!1 &2047639286
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2047639287}
-  m_Layer: 5
-  m_Name: Middle
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2047639287
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047639286}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1925489672}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2072865193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2794,6 +2570,7 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   pelletCount: 1
   spreadAngle: 0.02
+  weaponType: 0
   iconWeaponBody: {fileID: 21300000, guid: cae8f7fee08d5804198ddee2305aa1ce, type: 3}
   iconGrip: {fileID: 0}
   iconMagazine: {fileID: 21300000, guid: 2ef4fe13b3142c54082553d9ab491750, type: 3}
@@ -2947,5 +2724,4 @@ SceneRoots:
   - {fileID: 287155434}
   - {fileID: 1176459751}
   - {fileID: 1665989457}
-  - {fileID: 1925489672}
   - {fileID: 1269095120}

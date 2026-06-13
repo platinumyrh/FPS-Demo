@@ -2,25 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 public enum UI_Layer
-{ 
+{
     Bottom,
     Top,
     Middle,
     System,
-
-
 }
+
 /// <summary>
 /// UI管理器
-/// 管理所有显示面板
-/// 为外部提供显示 隐藏等接口
 /// </summary>
 public class UIManager : BaseManager<UIManager>
 {
     public Dictionary<string, BasePanel> panelDic = new Dictionary<string, BasePanel>();
 
-    // ====== 新增：用来接管并存储当前各活跃面板对应的纯 C# Controller 实例 ======
+    // 接管并存储当前各活跃面板对应的纯 C# Controller 实例
     private Dictionary<string, object> controllerDic = new Dictionary<string, object>();
 
     private Transform canvas;
@@ -32,49 +30,78 @@ public class UIManager : BaseManager<UIManager>
 
     public UIManager()
     {
-        // 加载Canvas
-        GameObject obj = ResManager.GetInstance().Load<GameObject>("UI/Canvas");
+        // 1. 同步加载主大 Canvas 容器
+        GameObject obj = ResManager.GetInstance().Load<GameObject>("UI/P_LPSP_UI_Canvas");
         if (obj != null)
         {
-            GameObject canvasInstance = GameObject.Instantiate(obj);  // ✅ 实例化
+            GameObject canvasInstance = GameObject.Instantiate(obj);
+
+            // 🚨 【核心修正 1】：强行洗掉 (Clone) 后缀，确保名字绝对纯净
+            canvasInstance.name = "P_LPSP_UI_Canvas";
+
             canvas = canvasInstance.transform;
+
+            // 强行正位，防止继承场景里的畸变
+            canvas.SetParent(null);
+            canvas.localPosition = Vector3.zero;
+            canvas.localRotation = Quaternion.identity;
+            canvas.localScale = Vector3.one;
+
             GameObject.DontDestroyOnLoad(canvasInstance);
 
-            // 找到各层
+            // 2. 提取并注入 MVC 控制器
+            BasePanel panel = canvasInstance.GetComponent<BasePanel>();
+            if (panel != null)
+            {
+                // 用规范化后的纯净名字作为 Key 存入字典
+                panelDic[canvasInstance.name] = panel;
+
+                // 此时匹配进去的就是 "P_LPSP_UI_Canvas"，完美契合路由！
+                BindControllerForPanel(canvasInstance.name, panel);
+            }
+
+            // 3. 寻找层级容器
             bottom = canvas.Find("Bottom");
             top = canvas.Find("Top");
             middle = canvas.Find("Middle");
             system = canvas.Find("System");
         }
 
-        // 加载EventSystem（只需加载一次）
+        // 加载EventSystem
         obj = ResManager.GetInstance().Load<GameObject>("UI/EventSystem");
         if (obj != null)
         {
-            GameObject.DontDestroyOnLoad(obj);
+            GameObject eventSystemInstance = GameObject.Instantiate(obj);
+            eventSystemInstance.transform.SetParent(null);
+            GameObject.DontDestroyOnLoad(eventSystemInstance);
         }
     }
 
     public void ShowPanel(string panelName, UI_Layer layer)
     {
-        // 避免重复加载
-        if (panelDic.ContainsKey(panelName))
+        // 🚨 【核心修正 2】：智能截取纯文件名（比如把 "UI/P_LPSP_UI_Canvas" 或 "P_LPSP_UI_Canvas" 统一变成 "P_LPSP_UI_Canvas"）
+        string purePanelName = panelName.Contains("/") ? panelName.Substring(panelName.LastIndexOf('/') + 1) : panelName;
+
+        // 拦截机制：如果主大 Canvas 已经在构造函数里初始化过了，直接 Show，拒绝二次重复创建！
+        if (panelDic.ContainsKey(purePanelName))
         {
-            panelDic[panelName].Show();
+            panelDic[purePanelName].Show();
             return;
         }
 
-        ResManager.GetInstance().LoadAsync<GameObject>(panelName, (obj) =>
+        // 补全路径防御机制：如果传入的名字不带文件夹前缀，自动帮它补上 "UI/" 路径再加载
+        string realLoadPath = panelName.StartsWith("UI/") ? panelName : "UI/" + panelName;
+
+        ResManager.GetInstance().LoadAsync<GameObject>(realLoadPath, (obj) =>
         {
             if (obj == null)
             {
-                Debug.LogError($"加载面板失败：{panelName}");
+                Debug.LogError($"[UIManager] 异步加载面板失败，请检查 Resources 下是否存在该路径: {realLoadPath}");
                 return;
             }
 
-            // 实例化
             GameObject panelInstance = GameObject.Instantiate(obj);
-            panelInstance.name = panelName; // 方便调试
+            panelInstance.name = purePanelName; // 使用纯净名字命名
 
             // 设置父物体
             Transform father = GetLayerTransform(layer);
@@ -83,13 +110,12 @@ public class UIManager : BaseManager<UIManager>
             // 重置变换
             ResetTransform(panelInstance.transform);
 
-            // 存储Panel脚本
+            // 存储 Panel 并绑定 Controller
             BasePanel panel = panelInstance.GetComponent<BasePanel>();
             if (panel != null)
             {
-                panelDic[panelName] = panel;
-                // ====== 核心注入：在 View 实例化完毕的一瞬间，为其匹配并绑定其专属 Controller ======
-                BindControllerForPanel(panelName, panel);
+                panelDic[purePanelName] = panel;
+                BindControllerForPanel(purePanelName, panel);
             }
         });
     }
@@ -98,17 +124,18 @@ public class UIManager : BaseManager<UIManager>
     {
         switch (layer)
         {
-            case UI_Layer.Bottom: return bottom;
-            case UI_Layer.Top: return top;
-            case UI_Layer.Middle: return middle;
-            case UI_Layer.System: return system;
-            default: return bottom;
+            case UI_Layer.Bottom: return bottom ?? canvas;
+            case UI_Layer.Top: return top ?? canvas;
+            case UI_Layer.Middle: return middle ?? canvas;
+            case UI_Layer.System: return system ?? canvas;
+            default: return bottom ?? canvas;
         }
     }
 
     private void ResetTransform(Transform trans)
     {
         trans.localPosition = Vector3.zero;
+        trans.localRotation = Quaternion.identity;
         trans.localScale = Vector3.one;
 
         RectTransform rect = trans as RectTransform;
@@ -122,91 +149,40 @@ public class UIManager : BaseManager<UIManager>
 
     public void HidePanel(string panelName)
     {
-
-        if (panelDic.TryGetValue(panelName, out BasePanel panel))
+        string purePanelName = panelName.Contains("/") ? panelName.Substring(panelName.LastIndexOf('/') + 1) : panelName;
+        if (panelDic.TryGetValue(purePanelName, out BasePanel panel))
         {
             panel.Hide();
         }
-
-
-        //Debug.Log($"HidePanel 被调用，面板名：{panelName}");
-        //Debug.Log($"panelDic 中是否有：{panelDic.ContainsKey(panelName)}");
-
-        //if (panelDic.TryGetValue(panelName, out BasePanel panel))
-        //{
-        //    Debug.Log($"找到面板，调用 Hide()");
-        //    panel.Hide();
-        //}
-        //else
-        //{
-        //    Debug.LogWarning($"面板 {panelName} 不在 panelDic 中！");
-        //    // 打印所有已加载的面板
-        //    foreach (var key in panelDic.Keys)
-        //    {
-        //        Debug.Log($"已加载的面板：{key}");
-        //    }
-        //}
     }
 
-    /// <summary>
-    /// 关闭面板
-    /// 核心重构：在彻底销毁 UI 游戏对象前，必须先调用并卸载其对应的 Controller，防止内存泄漏！
-    /// </summary>
     public void ClosePanel(string panelName)
     {
-        if (panelDic.TryGetValue(panelName, out BasePanel panel))
+        string purePanelName = panelName.Contains("/") ? panelName.Substring(panelName.LastIndexOf('/') + 1) : panelName;
+        if (panelDic.TryGetValue(purePanelName, out BasePanel panel))
         {
-            // 1. 优先解除并销毁 C# 控制器，触发其 UnsubscribeAllEvents
-            if (controllerDic.TryGetValue(panelName, out object controllerObj))
+            if (controllerDic.TryGetValue(purePanelName, out object controllerObj))
             {
-                // 使用反射动态寻找并执行它的 Destroy 方法，彻底断开 EventBus 订阅与 Mono 监听
                 var destroyMethod = controllerObj.GetType().GetMethod("Destroy");
                 destroyMethod?.Invoke(controllerObj, null);
-
-                // 从接管字典移除
-                controllerDic.Remove(panelName);
+                controllerDic.Remove(purePanelName);
             }
 
-            // 2. 物理销毁游戏场景内的 UI 物体
             GameObject.Destroy(panel.gameObject);
-            panelDic.Remove(panelName);
+            panelDic.Remove(purePanelName);
         }
     }
 
-    public T GetPanel<T>(string panelName)
-        where T : BasePanel
-    {
-        if (panelDic.TryGetValue(panelName, out BasePanel panel))
-        {
-            return panel as T;
-        }
-
-        Debug.LogWarning($"GetPanel 找不到面板: {panelName}");
-        return null;
-    }
-
-    /// <summary>
-    /// 控制器注入路由：根据面板预制体的路径/名字，在这里 new 出它专属的 C# Controller
-    /// </summary>
     private void BindControllerForPanel(string panelName, BasePanel panel)
     {
-        // 路由匹配：如果加载的是武器面板
+        // 🚨 【核心修正 3】：此时传进来的 panelName 必然是完全去除了路径和 (Clone) 的 "P_LPSP_UI_Canvas"
         if (panelName == "P_LPSP_UI_Canvas" && panel is WeaponStatusPanel weaponView)
         {
-            // 1. 动态生成控制器（其内部会自动创建与之绑定的 WeaponModel）
             WeaponUIController weaponController = new WeaponUIController(weaponView);
-
-            // 2. 框架约束：必须手动调用 Init() 来开始让它干活、绑定事件、绑定 MonoManager
             weaponController.Init();
-
-            // 3. 丢进字典中统一接管
             controllerDic[panelName] = weaponController;
+
+            Debug.Log($"<color=green>[MVC 成功注入]</color> 初始大Canvas: {panelName} 已完美绑定 WeaponUIController！");
         }
-
-        // 以后你每增加一个新系统面板（例如背包 Panel），就在这里加一条路由：
-        // else if (panelName == "UI/BagPanel" && panel is BagPanel bagView) { ... }
     }
-
-
-   
 }

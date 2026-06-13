@@ -103,6 +103,9 @@ public class InputManager :BaseManager<InputManager>
         //鼠标滚轮
         player.Scroll.performed += OnScrollPerformed;
 
+        //丢枪
+        player.DropWeapon.performed += OnDropWeaponPerformed;
+
         ///<summary>
         ///枪械相关输入
         ///</summary>
@@ -256,6 +259,11 @@ public class InputManager :BaseManager<InputManager>
     {
         GameEventBus.GetInstance().Publish(GameEventType.OnInspect,
             new InputActionData("Inspect"));
+    }
+
+    private void OnDropWeaponPerformed(InputAction.CallbackContext conext)
+    {
+        GameEventBus.GetInstance().Publish(GameEventType.OnDropInput, new InputActionData("DropWeapon"));
     }
 
     private void OnCrouchPerformed(InputAction.CallbackContext context)

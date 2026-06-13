@@ -1,5 +1,6 @@
 ﻿﻿using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using Unity.VisualScripting;
 using UnityEditor.Purchasing;
 using UnityEngine;
@@ -78,6 +79,8 @@ public class PlayerController : MonoBehaviour
         // 传入你的武器 UI 预制体名字（注意和 BindControllerForPanel 里的路由名字保持一致）
         UIManager.GetInstance().ShowPanel("P_LPSP_UI_Canvas", UI_Layer.Bottom);
 
+        Debug.Log(playerCamera.name);
+
        
 
 
@@ -95,6 +98,7 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Subscribe<InputHoldingData>(GameEventType.OnAim, OnAimChange);
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnCrouchInput, OnCrouch);
+        GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnDropInput, OnDropWeapon);
 
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnReloadComplete, HandleReloadCompleteLogic);
 
@@ -112,13 +116,14 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Unsubscribe<InputHoldingData>(GameEventType.OnAim, OnAimChange);
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnCrouchInput, OnCrouch);
+        GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnDropInput, OnDropWeapon);
 
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnReloadComplete, HandleReloadCompleteLogic);
     }
 
     private void Update()
     {
-
+       
        
         // 监听 Esc 键切换鼠标锁定状态
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -261,6 +266,19 @@ public class PlayerController : MonoBehaviour
 
         // 驱动移动动画
         animationController.ApplyLocomotion(currentInputMove, actualRunning);
+    }
+
+
+    private void OnDropWeapon(InputActionData data)
+    {
+        if (currentWeapon == null) return;
+
+        // 安全检查：切枪/换弹/检视中不能丢（防止状态错乱）
+        if (currentWeapon.isReloading || currentWeapon.isInspecting) return;
+
+        // 调用 WeaponManager 的丢枪方法
+        var weaponManager = GetComponent<PlayerWeaponManager>();
+        weaponManager?.DropCurrentWeapon();
     }
 
     #region 枪械相关逻辑
