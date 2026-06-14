@@ -46,6 +46,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float fireRate = 0.1f; // 射击间隔（秒），0.1秒一发等于每分钟600发
     private float fireTimer = 0f; // 射击冷却计时器
 
+    [Header("交互相关")]
+    private InteractionDetector interactionDetector;
+
     
     
     public GunBase currentWeapon { get; set; }
@@ -67,6 +70,7 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponentInParent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
         animationController = GetComponentInChildren<PlayerAnimationController>();
+        interactionDetector = GetComponent<InteractionDetector>();
 
         if (cameraTransform == null) cameraTransform = playerCamera.transform;
         cameraOriginLocalPos = cameraTransform.localPosition;
@@ -99,6 +103,7 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnCrouchInput, OnCrouch);
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnDropInput, OnDropWeapon);
+        GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnInteractInput, OnInteract);
 
         GameEventBus.GetInstance().Subscribe<InputActionData>(GameEventType.OnReloadComplete, HandleReloadCompleteLogic);
 
@@ -117,13 +122,22 @@ public class PlayerController : MonoBehaviour
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnInspect, OnInspect);
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnCrouchInput, OnCrouch);
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnDropInput, OnDropWeapon);
+        GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnInteractInput, OnInteract);
 
         GameEventBus.GetInstance().Unsubscribe<InputActionData>(GameEventType.OnReloadComplete, HandleReloadCompleteLogic);
     }
 
     private void Update()
     {
-       
+        //if (Input.GetKeyDown(KeyCode.O))
+        //{
+        //    UIManager.GetInstance().ShowSimplePanel("Interaction", UI_Layer.System);
+        //}
+        //if (Input.GetKeyDown(KeyCode.P))
+        //{
+        //    UIManager.GetInstance().HideSimplePanel("Interaction");
+        //}
+
        
         // 监听 Esc 键切换鼠标锁定状态
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -222,6 +236,11 @@ public class PlayerController : MonoBehaviour
             // 保持 X 和 Z 不变，只平滑改变 Y
             animator.transform.localPosition = new Vector3(currentAnimPos.x, nextAnimY, currentAnimPos.z);
         }
+    }
+
+    private void OnInteract(InputActionData data)
+    {
+        interactionDetector.TryInteract(this);
     }
     /// <summary>
     /// 每帧执行：将水平移动、重力、跳跃速度结合，最终传给 CharacterController

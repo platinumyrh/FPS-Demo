@@ -379,7 +379,23 @@ MonoBehaviour:
   defaultPrimaryId: P_LPSP_WEP_AR_01
   defaultSecondaryId: P_LPSP_WEP_Handgun_01
   defaultSpecialId: P_LPSP_WEP_GL_01
-  groundPickupPrefab: {fileID: 9024117657496060599, guid: a040088b38cac974c8535c02e6748765, type: 3}
+  groundPickupPrefab: {fileID: 3360226523836548531, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+--- !u!114 &294305298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294305288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6384566ffdc5f0f4cb010f5e9f272110, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectDistance: 3
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &403174185
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -560,6 +576,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 993d360352221784a9f198b1779f7ee2, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Handgun_04
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -600,6 +617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 1288116e5192cd84b808721e453eb7e7, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_AR_01
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -650,6 +668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 257eac322a7afde43bfa9aa9e60baa84, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Handgun_03
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -1173,6 +1192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 0ef5ab816395d5c408eae1d1195c410c, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Sniper_01
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -1218,6 +1238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 6593f7d4f840f4e44b9903e6f36bac23, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_AR_03
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -1452,6 +1473,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2751027687307977091, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 294305293}
+    - targetCorrespondingSourceObject: {fileID: 2751027687307977091, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 294305298}
     - targetCorrespondingSourceObject: {fileID: 2496723213727302341, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 602273566}
@@ -1659,6 +1683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 227c83fdfbb09484f8ce88cdfcd6a122, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_SMG_01
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -1858,6 +1883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 72af04fc692398745b4ded1eda224fa4, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_SMG_03
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -1913,6 +1939,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 588e5a327922e1f4e9254d9b9488cad7, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Sniper_03
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -1953,6 +1980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 1e7a1bd7304ade54f9fbbec8df086aff, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_RL_01
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2101,29 +2129,29 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 6035197157201893670, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 8866888881564896686, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 524015489424269637, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 7341023287159395696, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 6959441203472173576, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 1406960541904844308, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 1666372844924041713, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 5027388367351813683, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 2483027120732620591, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 1422918731733449871, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 3876722098687947949, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 9066545012762930215, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 1819415765844175212, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 5684604016060973216, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 8268180882328737001, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 7138744251171113875, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 7626283860103058678, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 3657122158581859590, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 487892342463188113, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 3261517837069369008, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 5784004909769752627, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 4368570769247342424, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
-    - {fileID: 8905485798253975877, guid: 8c7ba79f8ec05794aba7ffdd3d8aba93, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -2212,6 +2240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: a8ceb8f74503cf14f997ca44fd67156f, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_GL_01
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2257,6 +2286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: e5b7cd02c74bcc24387d5226d3465762, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_SMG_05
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2297,6 +2327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 921a0029ada06e04ab83361ebdc2ced3, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_SMG_02
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2352,6 +2383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 721c041fc33a0bc4fa626ec5c5ffd1ca, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_AR_02
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2392,6 +2424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 10f0359b8acaa884f84935b3e29a4327, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Sniper_02
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2432,6 +2465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 214b4496003eb7643958067947e35a34, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Handgun_01
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2477,6 +2511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 1faa6b60e979ab943acaba86b74a23b7, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Shotgun_01
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2522,6 +2557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: b44a243981f153642b5cb4a1e2ce0c87, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_Handgun_02
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2562,6 +2598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponOverrideController: {fileID: 22100000, guid: 1ef37ebe38602934290eff157e183e5d, type: 2}
+  modelPath: Model/Guns/P_LPSP_WEP_SMG_04
   weaponDamage: 25
   fireRange: 100
   hitLayers:
@@ -2715,6 +2752,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e85142d1c78f896448e46cbaebcccc58, type: 3}
+--- !u!1001 &9139274520440139911
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.004945
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.4023774
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.6214461
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3360226523836548531, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_Name
+      value: DropWeapon
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2725,3 +2819,4 @@ SceneRoots:
   - {fileID: 1176459751}
   - {fileID: 1665989457}
   - {fileID: 1269095120}
+  - {fileID: 9139274520440139911}

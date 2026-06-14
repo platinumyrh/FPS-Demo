@@ -23,6 +23,9 @@ public class GunBase : MonoBehaviour
     [SerializeField] private AnimatorOverrideController weaponOverrideController;
     private GunAnimationController gunAnimController;
 
+    [Header("枪械模型")]
+    [SerializeField] private string modelPath = "Model/Guns/P_LPSP_WEP_AR_01";
+
 
     [Header("枪械属性")]
     private int currentAmmoInClip; // 当前弹夹中的子弹数量
@@ -91,6 +94,12 @@ public class GunBase : MonoBehaviour
     public WeaponType GetWeaponType() => weaponType;
 
     /// <summary>
+    /// 获取该武器对应的地面拾取物模型路径（Resources 相对路径）
+    /// 用于 PlayerWeaponManager 丢枪时动态加载正确的模型
+    /// </summary>
+    public string GetModelPath() => modelPath;
+
+    /// <summary>
     /// 武器唯一标识（用于武器库模式中匹配"地上 Pickup"和"身上库中的枪"）。
     /// 默认使用 GameObject.name，子类可覆盖。
     /// </summary>
@@ -132,7 +141,7 @@ public class GunBase : MonoBehaviour
         if (currentAmmoInClip != 0)
         {
             currentAmmoInClip--;
-            Debug.Log($"[射击] {gameObject.name} 开火！剩余弹夹内子弹: {currentAmmoInClip}/{maxAmmoInClip}，总弹药: {totalAmmo}");
+           // Debug.Log($"[射击] {gameObject.name} 开火！剩余弹夹内子弹: {currentAmmoInClip}/{maxAmmoInClip}，总弹药: {totalAmmo}");
 
             // 播放枪械自身的动画
             if (gunAnimController != null)
@@ -144,7 +153,7 @@ public class GunBase : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[射击] {gameObject.name} 弹夹空了！请换弹！");
+          //  Debug.Log($"[射击] {gameObject.name} 弹夹空了！请换弹！");
             // 可以在这里播放空弹夹的提示音效或动画
         }
         // 在 GunBase.cs 射击、切枪、换弹成功的数据结算完后：

@@ -449,10 +449,11 @@ public class PlayerWeaponManager : MonoBehaviour
         if (pickup != null)
         {
             pickup.Setup(
-                gun.GetWeaponId(),           // 武器ID（用来匹配库中的枪）
-                gun.GetWeaponType(),         // 武器类型
-                gun.GetCurrentAmmoInClip(),  // 弹夹内弹药
-                gun.GetTotalAmmo()           // 总备用弹药
+                    gun.GetWeaponId(),           // 武器ID（用来匹配库中的枪）
+                    gun.GetWeaponType(),         // 武器类型
+                    gun.GetCurrentAmmoInClip(),  // 弹夹内弹药
+                    gun.GetTotalAmmo(),          // 总备用弹药
+                    gun.GetModelPath()           // 🔥 新增：模型资源路径
             );
         }
         else

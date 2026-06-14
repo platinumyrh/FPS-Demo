@@ -17,6 +17,8 @@ public enum UI_Layer
 public class UIManager : BaseManager<UIManager>
 {
     public Dictionary<string, BasePanel> panelDic = new Dictionary<string, BasePanel>();
+    private Dictionary<string, GameObject> simplePanelDic = new Dictionary<string, GameObject>();
+
 
     // 接管并存储当前各活跃面板对应的纯 C# Controller 实例
     private Dictionary<string, object> controllerDic = new Dictionary<string, object>();
@@ -65,6 +67,8 @@ public class UIManager : BaseManager<UIManager>
             top = canvas.Find("Top");
             middle = canvas.Find("Middle");
             system = canvas.Find("System");
+
+            
         }
 
         // 加载EventSystem
@@ -120,6 +124,36 @@ public class UIManager : BaseManager<UIManager>
         });
     }
 
+    /// <summary>加载一个简单的非 MVC 面板（不做 ResetTransform，不绑定 Controller）</summary>
+    public GameObject ShowSimplePanel(string panelName, UI_Layer layer)
+    {
+        // 避免重复加载
+        if (simplePanelDic.ContainsKey(panelName))
+        {
+            simplePanelDic[panelName].SetActive(true);
+            return simplePanelDic[panelName];
+        }
+
+        string realLoadPath = panelName.StartsWith("UI/") ? panelName : "UI/" + panelName;
+        GameObject obj = ResManager.GetInstance().Load<GameObject>(realLoadPath);
+
+        if (obj == null)
+        {
+            Debug.LogError($"[UIManager] 加载简单面板失败: {realLoadPath}");
+            return null;
+        }
+
+        GameObject instance = GameObject.Instantiate(obj);
+        Transform father = GetLayerTransform(layer);
+
+        // false = 保持预制体原始 RectTransform 尺寸
+        instance.transform.SetParent(father, false);
+
+        simplePanelDic[panelName] = instance;
+        return instance;
+    }
+
+
     private Transform GetLayerTransform(UI_Layer layer)
     {
         switch (layer)
@@ -172,6 +206,25 @@ public class UIManager : BaseManager<UIManager>
             panelDic.Remove(purePanelName);
         }
     }
+    /// <summary>隐藏简单面板（不销毁）</summary>
+    public void HideSimplePanel(string panelName)
+    {
+        if (simplePanelDic.TryGetValue(panelName, out GameObject panel))
+        {
+            panel.SetActive(false);
+        }
+    }
+
+    /// <summary>关闭并销毁简单面板</summary>
+    public void CloseSimplePanel(string panelName)
+    {
+        if (simplePanelDic.TryGetValue(panelName, out GameObject panel))
+        {
+           GameObject.Destroy(panel);
+            simplePanelDic.Remove(panelName);
+        }
+    }
+    
 
     private void BindControllerForPanel(string panelName, BasePanel panel)
     {
