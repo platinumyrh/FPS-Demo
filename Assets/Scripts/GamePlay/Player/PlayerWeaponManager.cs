@@ -112,7 +112,7 @@ public class PlayerWeaponManager : MonoBehaviour
             {
                 var allGuns = inventory.GetComponentsInChildren<GunBase>(true); // true = 包含失活的
                 weaponLibrary = new List<GunBase>(allGuns);
-                Debug.Log($"[PlayerWeaponManager] 自动收集到 {weaponLibrary.Count} 把武器");
+                //Debug.Log($"[PlayerWeaponManager] 自动收集到 {weaponLibrary.Count} 把武器");
             }
             else
             {
@@ -134,7 +134,7 @@ public class PlayerWeaponManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"[PlayerWeaponManager] 武器库已就绪，共 {libraryLookup.Count} 把唯一武器");
+       // Debug.Log($"[PlayerWeaponManager] 武器库已就绪，共 {libraryLookup.Count} 把唯一武器");
     }
 
     /// <summary>根据武器ID从库中查找 GunBase</summary>
@@ -222,12 +222,12 @@ public class PlayerWeaponManager : MonoBehaviour
     {
         if (gun == null)
         {
-            Debug.LogWarning($"[PlayerWeaponManager] 尝试装入空枪到 {type} 槽位");
+           // Debug.LogWarning($"[PlayerWeaponManager] 尝试装入空枪到 {type} 槽位");
             return;
         }
 
         SetSlot(type, gun);
-        Debug.Log($"[PlayerWeaponManager] 装备 {type}: {gun.gameObject.name}");
+        //Debug.Log($"[PlayerWeaponManager] 装备 {type}: {gun.gameObject.name}");
     }
 
     /// <summary>激活指定槽位的武器（切换动画 + 显示 + 数据绑定）</summary>
@@ -271,7 +271,7 @@ public class PlayerWeaponManager : MonoBehaviour
         WeaponUIData uiData = newWeapon.CreateUIData();
         GameEventBus.GetInstance().Publish<WeaponUIData>(GameEventType.OnWeaponUIUpdate, uiData);
 
-        Debug.Log($"[PlayerWeaponManager] ✓ 激活 {targetSlot}: {newWeapon.gameObject.name}");
+        //Debug.Log($"[PlayerWeaponManager] ✓ 激活 {targetSlot}: {newWeapon.gameObject.name}");
     }
 
     /// <summary>开局装备默认武器</summary>
@@ -393,7 +393,7 @@ public class PlayerWeaponManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[PlayerWeaponManager] 丢弃武器: {gun.gameObject.name} ({currentSlotType})");
+        //Debug.Log($"[PlayerWeaponManager] 丢弃武器: {gun.gameObject.name} ({currentSlotType})");
 
         // 1. 先隐藏当前武器
         gun.gameObject.SetActive(false);
@@ -420,7 +420,7 @@ public class PlayerWeaponManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[PlayerWeaponManager] 丢弃 {slotType} 槽位: {gun.gameObject.name}");
+        //Debug.Log($"[PlayerWeaponManager] 丢弃 {slotType} 槽位: {gun.gameObject.name}");
 
         gun.gameObject.SetActive(false);
         SpawnGroundPickup(gun);
@@ -520,7 +520,7 @@ public class PlayerWeaponManager : MonoBehaviour
         if (existing != null && swapIfOccupied)
         {
             // ===== 交换：旧武器掉地上 =====
-            Debug.Log($"[PlayerWeaponManager] 交换 {targetType}: {existing.gameObject.name} → {targetGun.gameObject.name}");
+            //Debug.Log($"[PlayerWeaponManager] 交换 {targetType}: {existing.gameObject.name} → {targetGun.gameObject.name}");
 
             existing.gameObject.SetActive(false);
             SpawnGroundPickup(existing);
@@ -529,24 +529,34 @@ public class PlayerWeaponManager : MonoBehaviour
         else if (existing != null && !swapIfOccupied)
         {
             // ===== 替换：旧武器直接失活回库（不掉地上）=====
-            Debug.Log($"[PlayerWeaponManager] 替换 {targetType}: {existing.gameObject.name} → {targetGun.gameObject.name}");
+            //Debug.Log($"[PlayerWeaponManager] 替换 {targetType}: {existing.gameObject.name} → {targetGun.gameObject.name}");
             existing.gameObject.SetActive(false);
             ClearSlot(targetType);
         }
         else
         {
             // ===== 空槽位：直接装入 =====
-            Debug.Log($"[PlayerWeaponManager] 装入 {targetType}: {targetGun.gameObject.name}");
+            //Debug.Log($"[PlayerWeaponManager] 装入 {targetType}: {targetGun.gameObject.name}");
         }
 
         // 4. 用 Pickup 的数据恢复弹药状态（核心！）
+        //Debug.Log($"[PlayerWeaponManager] 捡枪恢复弹药 — weaponId={pickup.weaponId}, 弹夹={pickup.savedCurrentAmmo}, 备弹={pickup.savedTotalAmmo}");
         targetGun.RestoreAmmoState(pickup.savedCurrentAmmo, pickup.savedTotalAmmo);
 
         // 5. 装入槽位
         EquipToSlot(targetType, targetGun);
 
-        // 6. 激活显示（带切枪动画）
-        StartCoroutine(SwitchWeaponRoutine(targetType));
+        // 6. 激活显示
+        if (targetType == currentSlotType)
+        {
+            // 同槽位交换：旧枪已在上面的交换分支里手动隐藏了，直接激活新枪
+            ActivateSlot(targetType);
+        }
+        else
+        {
+            // 不同槽位：走切枪动画协程
+            StartCoroutine(SwitchWeaponRoutine(targetType));
+        }
 
         // 7. 销毁地面的拾取物
         if (pickup.gameObject != null)

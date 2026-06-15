@@ -51,7 +51,20 @@ public class InputHoldingData : GameEventData
         IsHolding = isHolding;
     }
 }
+/// <summary>
+/// 武器成功开火事件数据，携带枪口位置供特效系统使用
+/// </summary>
+public class Shooted : GameEventData
+{
+    public Vector3 FirePointPosition;
+    public Quaternion FirePointRotation;
 
+    public Shooted(Vector3 position, Quaternion rotation)
+    {
+        FirePointPosition = position;
+        FirePointRotation = rotation;
+    }
+}
 
 public class BulletHitEventData : GameEventData
 {

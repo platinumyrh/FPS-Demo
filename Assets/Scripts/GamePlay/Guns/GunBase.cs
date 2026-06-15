@@ -28,9 +28,9 @@ public class GunBase : MonoBehaviour
 
 
     [Header("枪械属性")]
-    private int currentAmmoInClip; // 当前弹夹中的子弹数量
-    private int maxAmmoInClip; // 弹夹容量
-    private int totalAmmo; // 总弹药数量
+    private int currentAmmoInClip = 30; // 当前弹夹中的子弹数量
+    private int maxAmmoInClip = 30; // 弹夹容量
+    private int totalAmmo = 90; // 总弹药数量
    
     [SerializeField] protected float weaponDamage = 25f; // 子弹伤害
     [SerializeField] protected float fireRange = 100f;   // 最大射程
@@ -78,12 +78,7 @@ public class GunBase : MonoBehaviour
             Debug.LogError($"[GunBase] 在 {gameObject.name} 的固定路径下未找到 SOCKET_Muzzle，请检查拼写！");
         }
 
-       
-        maxAmmoInClip = 30; // 假设每个弹夹30发
-        currentAmmoInClip = maxAmmoInClip; // 初始化时弹夹装满
-        totalAmmo = 90; // 假设总弹药90发（3个弹夹）
-
-    }
+           }
     #region 数据封装与访问
     public int GetCurrentAmmoInClip() => currentAmmoInClip;
 
@@ -112,7 +107,7 @@ public class GunBase : MonoBehaviour
     {
         this.currentAmmoInClip = Mathf.Clamp(currentAmmo, 0, maxAmmoInClip);
         this.totalAmmo = Mathf.Max(0, totalAmmo);
-        Debug.Log($"[GunBase] {gameObject.name} 弹药已恢复: {currentAmmoInClip}/{maxAmmoInClip}, 总计: {totalAmmo}");
+      //  Debug.Log($"[GunBase] {gameObject.name} 弹药已恢复: {currentAmmoInClip}/{maxAmmoInClip}, 总计: {totalAmmo}");
     }
 
     #endregion
@@ -148,6 +143,9 @@ public class GunBase : MonoBehaviour
             {
                 gunAnimController.PlayShoot();
             }
+
+            GameEventBus.GetInstance().Publish(GameEventType.OnShooted,
+    new Shooted(firePoint.position, Quaternion.LookRotation(-firePoint.up)));
 
             ExcuteShotgunSpread();
         }
@@ -246,7 +244,7 @@ public class GunBase : MonoBehaviour
         // 拦截：如果正在换弹或已经在检视，则不触发
         if (isReloading || isInspecting) return;
 
-        Debug.Log($"[GunBase] 开始检视武器");
+        //Debug.Log($"[GunBase] 开始检视武器");
         isInspecting = true;
 
         if (gunAnimController != null)
@@ -265,7 +263,7 @@ public class GunBase : MonoBehaviour
         totalAmmo -= ammoToReload;
 
         isReloading = false; // 解开锁，允许再次开火
-        Debug.Log($"[GunBase] 换弹数据结算完毕！当前子弹：{currentAmmoInClip}/{maxAmmoInClip}");
+        //Debug.Log($"[GunBase] 换弹数据结算完毕！当前子弹：{currentAmmoInClip}/{maxAmmoInClip}");
 
         // 通知 UI 更新弹药显示
         WeaponUIData uiData = new WeaponUIData(gameObject.name, currentAmmoInClip, maxAmmoInClip, totalAmmo);

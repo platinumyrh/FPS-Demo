@@ -27,6 +27,7 @@
 
     //枪械相关
     OnShoot,          // 射击事件
+    OnShooted,
     OnReload,         // 换弹事件
     OnAim,            // 瞄准事件
     OnInspect,       // 检查枪械事件

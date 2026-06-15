@@ -65,6 +65,6 @@ public class GameObjectPool : BasePool<GameObject>
 
     private void DoSomething(GameObject obj)
     {
-        Debug.Log("name:" + obj.name);
+        //Debug.Log("name:" + obj.name);
     }
 }

@@ -45,7 +45,7 @@ public class InputManager :BaseManager<InputManager>
         MonoManager.GetInstance().AddUpdateListener(OnUpdate);
 
         isInitialized = true;
-        Debug.Log("[InputManager] 输入系统初始化完成");
+        //Debug.Log("[InputManager] 输入系统初始化完成");
     }
     /// <summary>
     /// 销毁输入系统

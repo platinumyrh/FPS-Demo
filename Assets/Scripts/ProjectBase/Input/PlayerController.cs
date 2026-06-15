@@ -61,7 +61,6 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        // 初始化输入系统
         InputManager.GetInstance().Initialize();
     }
     private void Start()
@@ -80,12 +79,12 @@ public class PlayerController : MonoBehaviour
         SetCursorState(true); // 游戏开始时默认锁定鼠标
 
 
-        // 传入你的武器 UI 预制体名字（注意和 BindControllerForPanel 里的路由名字保持一致）
-        UIManager.GetInstance().ShowPanel("P_LPSP_UI_Canvas", UI_Layer.Bottom);
-
-        Debug.Log(playerCamera.name);
-
        
+
+
+
+
+
 
 
     }
@@ -183,14 +182,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump(InputActionData data)
     {
-        Debug.Log("跳跃！");
+        //Debug.Log("跳跃！");
         // 处理跳跃逻辑...
         // 只有当在地面上时，才允许起跳
         if (isGrounded)
         {
             // 根据公式：v = sqrt(h * -2 * g) 计算出达到特定高度所需的起跳初速度
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
-            Debug.Log("跳跃成功！起跳速度：" + verticalVelocity);
+            //Debug.Log("跳跃成功！起跳速度：" + verticalVelocity);
         }
     }
     private void OnRun(InputHoldingData data)
@@ -340,7 +339,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[射击] {currentWeapon.gameObject.name} 弹夹空了！");
+            //Debug.Log($"[射击] {currentWeapon.gameObject.name} 弹夹空了！");
             // 自动触发换弹（可选体验优化）：
             // OnReload(new InputActionData("AutoReload")); 
         }
@@ -350,25 +349,19 @@ public class PlayerController : MonoBehaviour
     {
         if (currentWeapon == null) return;
 
-        // 拦截：如果已经在换弹，或者子弹是满的，则不执行
-        if (currentWeapon.isReloading || currentWeapon.isEmpty == false && currentWeapon.isReloading) return;
+        // 满弹 / 没备弹 / 已在换弹 / 检视中 → 不换
+        if (currentWeapon.isReloading || currentWeapon.isInspecting) return;
+        if (currentWeapon.GetCurrentAmmoInClip() >= currentWeapon.GetMaxAmmoInClip()) return;
+        if (currentWeapon.GetTotalAmmo() <= 0) return;
 
-        // 副作用：换弹时强制退出瞄准（枪都放下掏弹夹了，无法瞄准）
         if (isAiming)
         {
             isAiming = false;
-            animationController.ApplyAim(false); // 通知动画恢复常规持枪
+            animationController.ApplyAim(false);
         }
 
-        // 副作用：换弹时不能全力奔跑
-        //if (isRunning)
-        //{
-        //    isRunning = false;
-        //}
-
-        // 执行换弹
-        animationController.ApplyReload(currentWeapon.isEmpty);
         currentWeapon.ReloadWeapon();
+        animationController.ApplyReload(currentWeapon.isEmpty);
     }
 
     public void OnAim(InputActionData data)

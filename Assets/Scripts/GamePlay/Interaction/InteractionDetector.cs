@@ -127,11 +127,11 @@ public class InteractionDetector : MonoBehaviour
     {
         if (CurrentTarget == null)
         {
-            Debug.Log("[InteractionDetector] 当前没有可交互的目标");
+            //Debug.Log("[InteractionDetector] 当前没有可交互的目标");
             return;
         }
 
-        Debug.Log($"[InteractionDetector] 触发交互: {CurrentPrompt}");
+        //Debug.Log($"[InteractionDetector] 触发交互: {CurrentPrompt}");
 
         // 调用目标物体的交互方法
         CurrentTarget.OnInteract(player);

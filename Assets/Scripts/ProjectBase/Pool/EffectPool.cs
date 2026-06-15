@@ -40,10 +40,12 @@ public class EffectPool :BasePool<ParticleSystem>
             obj.transform.SetParent(parentTransform);
         }
 
-        ParticleSystem ps = obj.GetComponent<ParticleSystem>();
+        ParticleSystem ps = obj.GetComponentInChildren<ParticleSystem>();
         if (ps == null)
         {
             Debug.LogError($"预制体 {prefabPath} 没有 ParticleSystem 组件");
+            GameObject.Destroy(obj);
+            return null;
         }
 
         return ps;
@@ -51,16 +53,23 @@ public class EffectPool :BasePool<ParticleSystem>
     private void OnGetEffect(ParticleSystem effect)
     {
         effect.gameObject.SetActive(true);
-        effect.Play();
+        var allPS = effect.GetComponentsInChildren<ParticleSystem>();
+        foreach (var ps in allPS)
+            ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        foreach (var ps in allPS)
+            ps.Play();
     }
     private void OnReleaseEffect(ParticleSystem effect)
     {
-        effect.Stop();
+        var allPS = effect.GetComponentsInChildren<ParticleSystem>();
+        foreach (var ps in allPS)
+            ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+
         effect.gameObject.SetActive(false);
 
         if (parentTransform != null)
         {
-            effect.transform.SetParent(parentTransform);
+            effect.transform.SetParent(parentTransform, false);
         }
     }
     private void OnDestroyEffect(ParticleSystem effect)

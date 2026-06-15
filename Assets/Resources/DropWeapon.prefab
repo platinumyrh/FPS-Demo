@@ -94,10 +94,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d20d5d1641aa6d44a442457bd9dfb79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponId: 
+  weaponId: P_LPSP_WEP_AR_01
   weaponType: 0
-  savedCurrentAmmo: 0
-  savedTotalAmmo: 0
+  savedCurrentAmmo: 30
+  savedTotalAmmo: 60
+  modelPath: Model/Guns/P_LPSP_WEP_AR_01
   rotateSpeed: 60
   floatAmplitude: 0.15
   floatSpeed: 1.5

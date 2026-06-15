@@ -10,11 +10,18 @@ using UnityEngine;
 /// </summary>
 public class GroundWeaponPickup : MonoBehaviour,IInteractable
 {
-    [Header("武器信息（由 PlayerWeaponManager.DropCurrentWeapon 自动写入）")]
-    public string weaponId;            // 武器唯一标识（对应 GunBase.GetWeaponId()）
-    public WeaponType weaponType;      // 武器类型（决定装入哪个槽位）
-    public int savedCurrentAmmo;       // 丢弃时弹夹内的弹药
-    public int savedTotalAmmo;         // 丢弃时的总备用弹药
+    [Header("武器信息")]
+    [Tooltip("武器唯一标识，需与玩家 INVENTORY 下对应枪的 GunBase.GetWeaponId() 一致")]
+    public string weaponId;
+    public WeaponType weaponType;
+    public int savedCurrentAmmo = 30;
+    public int savedTotalAmmo = 90;
+
+    [Header("手动放置配置")]
+    [Tooltip("Resources 下模型预制体路径，如 Model/Guns/P_LPSP_WEP_AR_01")]
+    [SerializeField] private string modelPath = "";
+
+    private bool didSetup;
 
     [Header("可视化设置")]
     [Tooltip("悬浮旋转动画速度（度/秒）")]
@@ -30,25 +37,39 @@ public class GroundWeaponPickup : MonoBehaviour,IInteractable
 
     #region 初始化
 
-    /// <summary>
-    /// 由 PlayerWeaponManager.SpawnGroundPickup 调用，写入武器数据并加载对应模型
-    /// </summary>
-    /// <param name="modelPath">Resources 下的模型预制体相对路径（如 "Model/Guns/P_LPSP_WEP_AR_01"）</param>
+    void Start()
+    {
+        // 如果 Setup() 已经被调用过（丢枪生成），跳过自初始化
+        if (didSetup) return;
+
+        // 如果 weaponId 为空，说明没配置，跳过
+        if (string.IsNullOrEmpty(weaponId))
+        {
+          //  Debug.LogWarning("[GroundWeaponPickup] weaponId 为空，跳过自初始化。请检查 Inspector 配置。");
+            return;
+        }
+
+        //Debug.Log($"[GroundWeaponPickup] Start自初始化 — weaponId={weaponId}, type={weaponType}, 弹夹={savedCurrentAmmo}, 备弹={savedTotalAmmo}, modelPath={modelPath}");
+
+        startPosition = transform.position;
+        spawnTime = Time.time;
+
+        Setup(weaponId, weaponType, savedCurrentAmmo, savedTotalAmmo, modelPath);
+    }
+
     public void Setup(string id, WeaponType type, int currentAmmo, int totalAmmo, string modelPath)
     {
         this.weaponId = id;
         this.weaponType = type;
         this.savedCurrentAmmo = currentAmmo;
         this.savedTotalAmmo = totalAmmo;
+        this.modelPath = modelPath;
+        didSetup = true;
 
         startPosition = transform.position;
         spawnTime = Time.time;
 
-        Debug.Log($"[GroundWeaponPickup] 初始化: {id} ({type}), 弹药 {currentAmmo}/{totalAmmo}");
-
-        // 动态加载并实例化对应武器的可视化模型
         LoadVisualModel(modelPath);
-        Debug.Log(modelPath);
     }
 
     #region 模型加载
@@ -99,7 +120,7 @@ public class GroundWeaponPickup : MonoBehaviour,IInteractable
             col.enabled = false;
         }
 
-        Debug.Log($"[GroundWeaponPickup] 模型已加载: {resourcePath} → {weaponId}");
+       // Debug.Log($"[GroundWeaponPickup] 模型已加载: {resourcePath} → {weaponId}");
     }
 
     #endregion
@@ -134,7 +155,7 @@ public class GroundWeaponPickup : MonoBehaviour,IInteractable
     {
         if (picker == null) return;
 
-        Debug.Log($"[GroundWeaponPickup] 被捡起: {weaponId}");
+        //Debug.Log($"[GroundWeaponPickup] 被捡起: {weaponId}");
 
         // 委托给 PlayerWeaponManager 处理所有逻辑（槽位判断、交换、弹药恢复等）
         picker.PickupWeapon(this);
@@ -171,7 +192,7 @@ public class GroundWeaponPickup : MonoBehaviour,IInteractable
     public void OnFocusEnter()
     {
         // 高亮效果：材质变亮 / 边框发光 / 浮动加速等
-        Debug.Log($"[交互] 瞄准: {weaponId}");
+      //  Debug.Log($"[交互] 瞄准: {weaponId}");
         UIManager.GetInstance().ShowSimplePanel("Interaction", UI_Layer.System);
     }
 

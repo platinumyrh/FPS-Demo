@@ -86,7 +86,7 @@ public class PlayerAnimationController : MonoBehaviour
     /// </summary>
     public void OnAnimationEndedReload()
     {
-        Debug.Log($"[PlayerController] 收到换弹动画结束事件，正在通知武器...");
+        //Debug.Log($"[PlayerController] 收到换弹动画结束事件，正在通知武器...");
 
         // 往事件总线广播：换弹动画结束了
         GameEventBus.GetInstance().Publish<InputActionData>(

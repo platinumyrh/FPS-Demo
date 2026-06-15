@@ -235,7 +235,7 @@ public class UIManager : BaseManager<UIManager>
             weaponController.Init();
             controllerDic[panelName] = weaponController;
 
-            Debug.Log($"<color=green>[MVC 成功注入]</color> 初始大Canvas: {panelName} 已完美绑定 WeaponUIController！");
+           // Debug.Log($"<color=green>[MVC 成功注入]</color> 初始大Canvas: {panelName} 已完美绑定 WeaponUIController！");
         }
     }
 }
