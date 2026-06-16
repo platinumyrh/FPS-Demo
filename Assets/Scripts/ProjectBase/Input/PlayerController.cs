@@ -79,13 +79,7 @@ public class PlayerController : MonoBehaviour
         SetCursorState(true); // 游戏开始时默认锁定鼠标
 
 
-       
-
-
-
-
-
-
+   
 
     }
     private void OnEnable()

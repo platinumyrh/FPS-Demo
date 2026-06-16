@@ -20,5 +20,7 @@ public class GameManager : MonoBehaviour
         GunEffectManager.GetInstance().RegisterEffect("MuzzleFlash", "VFX/FirePointFlame", 15);
         GunEffectManager.GetInstance().RegisterEffect("BulletImpact", "VFX/P_IMP_Metal", 15);
         GunEffectManager.GetInstance().Initialize();
+
+        PlayerSoundManager.GetInstance().Initialize();
     }
 }

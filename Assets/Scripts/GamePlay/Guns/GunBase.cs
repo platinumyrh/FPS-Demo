@@ -65,6 +65,11 @@ public class GunBase : MonoBehaviour
     [SerializeField] protected Sprite iconMuzzle;
     [SerializeField] protected Sprite iconScope;
 
+    [Header("音效设置")]
+    [SerializeField] protected string fireSoundPath = "SFX/Guns/Fire/AR_Fire";
+    [SerializeField] protected string reloadSoundPath = "SFX/Weapon/Reload";
+    [SerializeField] protected string emptyReloadSoundPath = "SFX/Weapon/Reload_Empty";
+
     
 
 
@@ -145,7 +150,7 @@ public class GunBase : MonoBehaviour
             }
 
             GameEventBus.GetInstance().Publish(GameEventType.OnShooted,
-    new Shooted(firePoint.position, Quaternion.LookRotation(-firePoint.up)));
+    new Shooted(firePoint.position, Quaternion.LookRotation(-firePoint.up), fireSoundPath));
 
             ExcuteShotgunSpread();
         }
@@ -232,6 +237,8 @@ public class GunBase : MonoBehaviour
 
         //Debug.Log($"[GunBase] 开始换弹动画");
         isReloading = true;
+
+        SoundManager.GetInstance().PlaySFX(isEmpty ? emptyReloadSoundPath : reloadSoundPath);
 
         if (gunAnimController != null)
         {

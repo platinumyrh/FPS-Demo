@@ -58,11 +58,13 @@ public class Shooted : GameEventData
 {
     public Vector3 FirePointPosition;
     public Quaternion FirePointRotation;
+    public string FireSoundPath;
 
-    public Shooted(Vector3 position, Quaternion rotation)
+    public Shooted(Vector3 position, Quaternion rotation, string fireSoundPath = null)
     {
         FirePointPosition = position;
         FirePointRotation = rotation;
+        FireSoundPath = fireSoundPath;
     }
 }
 

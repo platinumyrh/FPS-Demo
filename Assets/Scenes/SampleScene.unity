@@ -122,6 +122,71 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &23100155
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.48
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.9487584
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3360226523836548531, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_Name
+      value: SMG01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5224158601274790487, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: weaponId
+      value: P_LPSP_WEP_SMG_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5224158601274790487, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: modelPath
+      value: Model/Guns/P_LPSP_WEP_SMG_01
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
 --- !u!1001 &30426760
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -592,6 +657,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 5a6a9a9f580ad6d42b8a54e75ed0569d, type: 3}
+  fireSoundPath: SFX/Guns/Fire/Handgun_Fire
+  reloadSoundPath: SFX/Guns/Reload/Handgun_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/Handgun_Reload_Empty
 --- !u!114 &602273566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,6 +701,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: bbbb29d2cf3c91741bc1a1b953ca5776, type: 3}
+  fireSoundPath: SFX/Guns/Fire/AR_Fire
+  reloadSoundPath: SFX/Guns/Reload/AR_01_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/AR_01_Reload_Empty
 --- !u!1 &642418056 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7393180532843793990, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
@@ -684,6 +755,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 8dfba53139ea13f40b1977728ed0bea4, type: 3}
+  fireSoundPath: SFX/Guns/Fire/Handgun_Fire
+  reloadSoundPath: SFX/Guns/Reload/Handgun_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/Handgun_Reload_Empty
 --- !u!1001 &692374601
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1010,6 +1084,206 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7469638133471336777, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
   m_PrefabInstance: {fileID: 1176459751}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &861730534
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 100104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_Name
+      value: SK_TP_CH_Default
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.513241
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.029999971
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 9.60107
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400104, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c4787ad623ada42408a1e6abf2f38802, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2c56a83c3431ae248a78a389fa783ea8, type: 3}
+--- !u!1 &947383633
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 947383638}
+  - component: {fileID: 947383637}
+  - component: {fileID: 947383636}
+  - component: {fileID: 947383635}
+  - component: {fileID: 947383634}
+  m_Layer: 0
+  m_Name: Tets
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!95 &947383634
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947383633}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 027ae8cddc85a484fa5fd415d19d7a8e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!65 &947383635
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947383633}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &947383636
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947383633}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &947383637
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947383633}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &947383638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947383633}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.4909663, y: 1.4957407, z: 10.119332}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1208,6 +1482,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: ead659ba89d61fb40bc77677a511e1cb, type: 3}
+  fireSoundPath: SFX/Guns/Fire/Sniper_Fire
+  reloadSoundPath: SFX/Guns/Reload/Sniper_01_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/Sniper_01_Reload_Empty
 --- !u!4 &1029112570 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7610868675822231441, guid: e85142d1c78f896448e46cbaebcccc58, type: 3}
@@ -1254,6 +1531,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 1a74af3543706d8418df702491d2bc84, type: 3}
+  fireSoundPath: SFX/Guns/Fire/AR_Fire
+  reloadSoundPath: SFX/Guns/Reload/AR_03_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/AR_03_Reload_Empty
 --- !u!4 &1143348039 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7610868675822231441, guid: e85142d1c78f896448e46cbaebcccc58, type: 3}
@@ -1743,6 +2023,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: c26bf01c46a5629408398acf1d31ba1d, type: 3}
+  fireSoundPath: SFX/Guns/Fire/SMG_Fire
+  reloadSoundPath: SFX/Guns/Reload/SMG_01_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/SMG_01_Reload_Empty
 --- !u!1 &1367325864 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1346331453194381368, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
@@ -1943,6 +2226,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 096859cc0cc552c41b0501a5d9e2a073, type: 3}
+  fireSoundPath: SFX/Guns/Fire/SMG_Fire
+  reloadSoundPath: SFX/Guns/Reload/SMG_03_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/SMG_03_Reload_Empty
 --- !u!4 &1461893501 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7610868675822231441, guid: e85142d1c78f896448e46cbaebcccc58, type: 3}
@@ -2016,6 +2302,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 90dd513d519abac4aa2fb3089d451857, type: 3}
+  fireSoundPath: SFX/Guns/Fire/Sniper_Fire
+  reloadSoundPath: SFX/Guns/Reload/Sniper_03_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/Sniper_03_Reload_Empty
 --- !u!114 &1665631876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2057,6 +2346,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 0}
+  fireSoundPath: SFX/Weapon/Fire
+  reloadSoundPath: SFX/Weapon/Reload
+  emptyReloadSoundPath: SFX/Weapon/Reload_Empty
 --- !u!1001 &1665989457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2317,6 +2609,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 0}
+  fireSoundPath: SFX/Weapon/Fire
+  reloadSoundPath: SFX/Weapon/Reload
+  emptyReloadSoundPath: SFX/Weapon/Reload_Empty
 --- !u!1001 &1741619473
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2339,7 +2634,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7172876182386439445, guid: e949c120f0b50db4d943be164fe924a5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.029999971
+      value: 1.88
       objectReference: {fileID: 0}
     - target: {fileID: 7172876182386439445, guid: e949c120f0b50db4d943be164fe924a5, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2424,6 +2719,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: a98f27854865d9347bc1a8635ca7d847, type: 3}
+  fireSoundPath: SFX/Guns/Fire/SMG_Fire
+  reloadSoundPath: SFX/Guns/Reload/SMG_05_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/SMG_05_Reload_Empty
 --- !u!114 &1807701123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2465,6 +2763,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: cdd2172f98be329478382cec14b483e8, type: 3}
+  fireSoundPath: SFX/Guns/Fire/SMG_Fire
+  reloadSoundPath: SFX/Guns/Reload/SMG_02_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/SMG_02_Reload_Empty
 --- !u!4 &1824290724 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7610868675822231441, guid: e85142d1c78f896448e46cbaebcccc58, type: 3}
@@ -2521,6 +2822,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 4e72d2772f2e6e24ab58dd1a5acc70dc, type: 3}
+  fireSoundPath: SFX/Guns/Fire/AR_Fire
+  reloadSoundPath: SFX/Guns/Reload/AR_02_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/AR_02_Reload_Empty
 --- !u!114 &1885098908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2562,6 +2866,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 36da3e41d92f5284ab3e5da8fafa13e5, type: 3}
+  fireSoundPath: SFX/Guns/Fire/Sniper_Fire
+  reloadSoundPath: SFX/Guns/Reload/Sniper_02_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/Sniper_02_Reload_Empty
 --- !u!114 &1938462561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2603,6 +2910,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: c2a97b56575e8f6418a28d1261e20f69, type: 3}
+  fireSoundPath: SFX/Guns/Fire/Handgun_Fire
+  reloadSoundPath: SFX/Guns/Reload/Handgun_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/Handgun_Reload_Empty
 --- !u!1001 &1939548315
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2667,6 +2977,71 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1487885945}
   m_SourcePrefab: {fileID: 100100000, guid: 79927c6543a058b4383885fac101fe2e, type: 3}
+--- !u!1001 &1944568595
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 10.23
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.9487584
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 672061643126175205, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3360226523836548531, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: m_Name
+      value: DropWeapon (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5224158601274790487, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: weaponId
+      value: P_LPSP_WEP_Sniper_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 5224158601274790487, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: modelPath
+      value: Model/Guns/P_LPSP_WEP_Sniper_02
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
 --- !u!1 &1994300756 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2214960360259149576, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
@@ -2713,6 +3088,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: ebcb5612c77ab6f40b7f817a416b7040, type: 3}
+  fireSoundPath: SFX/Weapon/Fire
+  reloadSoundPath: SFX/Weapon/Reload
+  emptyReloadSoundPath: SFX/Weapon/Reload_Empty
 --- !u!1 &2043015730 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 247301344113785831, guid: 19eadcf8fbed56b4da77ca94c1b4145f, type: 3}
@@ -2759,6 +3137,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: 42c5ed8b34cd15042a6679651d4d9102, type: 3}
+  fireSoundPath: SFX/Guns/Fire/Handgun_Fire
+  reloadSoundPath: SFX/Guns/Reload/Handgun_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/Handgun_Reload_Empty
 --- !u!114 &2072865193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2800,6 +3181,9 @@ MonoBehaviour:
   iconLaser: {fileID: 0}
   iconMuzzle: {fileID: 0}
   iconScope: {fileID: 21300000, guid: eea40f665135a5c4cbc1ccf207a679b0, type: 3}
+  fireSoundPath: SFX/Guns/Fire/SMG_Fire
+  reloadSoundPath: SFX/Guns/Reload/SMG_04_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/SMG_04_Reload_Empty
 --- !u!1001 &2085396553
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2951,3 +3335,7 @@ SceneRoots:
   - {fileID: 1741619473}
   - {fileID: 1939548315}
   - {fileID: 1212844341}
+  - {fileID: 23100155}
+  - {fileID: 1944568595}
+  - {fileID: 947383638}
+  - {fileID: 861730534}
