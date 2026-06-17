@@ -49,6 +49,9 @@ public class PlayerController : MonoBehaviour
     [Header("交互相关")]
     private InteractionDetector interactionDetector;
 
+    [Header("第三人称身体")]
+    [SerializeField] private Transform bodyTransform;
+
     
     
     public GunBase currentWeapon { get; set; }
@@ -77,6 +80,17 @@ public class PlayerController : MonoBehaviour
         animatorOriginLocalY = animator.transform.localPosition.y;
 
         SetCursorState(true); // 游戏开始时默认锁定鼠标
+
+        isAiming = false;
+        isShooting = false;
+        isRunning = false;
+        isCrouching = false;
+
+        if (bodyTransform != null)
+        {
+            int localBodyLayer = LayerMask.NameToLayer("LocalBody");
+            SetLayerRecursive(bodyTransform, localBodyLayer);
+        }
 
 
    
@@ -448,8 +462,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-    
+    private void SetLayerRecursive(Transform t, int layer)
+    {
+        t.gameObject.layer = layer;
+        foreach (Transform child in t)
+            SetLayerRecursive(child, layer);
+    }
 
 }
 
