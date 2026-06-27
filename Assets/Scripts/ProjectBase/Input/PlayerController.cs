@@ -176,11 +176,7 @@ public class PlayerController : MonoBehaviour
 
 
         HandleCrouchingLogic();
-        ApplyMovementAndGravity(); // 每帧调用一次，处理移动和重力逻辑
-
-        // 第三人称上半身俯仰跟随
-        if (animationController != null)
-            animationController.pitchAngle = cameraPitch;
+        ApplyMovementAndGravity();
     }
 
     private void OnMove(InputEventData data)

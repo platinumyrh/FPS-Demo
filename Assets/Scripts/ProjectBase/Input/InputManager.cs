@@ -23,7 +23,13 @@ public class InputManager :BaseManager<InputManager>
     private bool isInitialized = false;
 
 
-    private bool isRunningPressed = false; // 记录当前是否按下了奔跑键
+    private bool isRunningPressed = false;
+
+    // 缓存事件数据对象，避免每帧堆分配
+    private InputEventData cachedMoveEvent = new InputEventData(Vector2.zero);
+    private InputLookData cachedLookEvent = new InputLookData(Vector2.zero);
+    private InputHoldingData cachedHoldTrue = new InputHoldingData(true);
+    private InputHoldingData cachedHoldFalse = new InputHoldingData(false);
 
     ///<summary>
     ///初始化输入系统 在游戏启动时调用一次
@@ -41,11 +47,7 @@ public class InputManager :BaseManager<InputManager>
         // 3. 注册回调（推荐方式：事件驱动）
         RegisterInputCallbacks();
 
-        // 4. 通过 MonoManager 注册 Update，用于需要逐帧轮询的场景
-        MonoManager.GetInstance().AddUpdateListener(OnUpdate);
-
         isInitialized = true;
-        //Debug.Log("[InputManager] 输入系统初始化完成");
     }
     /// <summary>
     /// 销毁输入系统
@@ -63,7 +65,6 @@ public class InputManager :BaseManager<InputManager>
             inputActions = null;
         }
 
-        MonoManager.GetInstance().RemoveUpdateListener(OnUpdate);
         isInitialized = false;
     }
 
@@ -155,31 +156,27 @@ public class InputManager :BaseManager<InputManager>
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
         currentMoveDirection = context.ReadValue<Vector2>();
-        // 发布移动事件
-        GameEventBus.GetInstance().Publish(GameEventType.OnMoveInput,
-            new InputEventData(currentMoveDirection));
-       
+        cachedMoveEvent.MoveDirection = currentMoveDirection;
+        GameEventBus.GetInstance().Publish(GameEventType.OnMoveInput, cachedMoveEvent);
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         currentMoveDirection = Vector2.zero;
-        GameEventBus.GetInstance().Publish(GameEventType.OnMoveCanceled,
-            new InputEventData(Vector2.zero));
+        cachedMoveEvent.MoveDirection = Vector2.zero;
+        GameEventBus.GetInstance().Publish(GameEventType.OnMoveCanceled, cachedMoveEvent);
     }
 
     private void OnRunningPerformed(InputAction.CallbackContext context)
     {
         isRunningPressed = true;
-        // 发布开始奔跑事件（假设你在 GameEventType 里加了 OnRunInput）
-        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputHoldingData(true));
+        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, cachedHoldTrue);
     }
 
     private void OnRunningCanceled(InputAction.CallbackContext context)
     {
         isRunningPressed = false;
-        // 发布停止奔跑事件
-        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, new InputHoldingData(false));
+        GameEventBus.GetInstance().Publish(GameEventType.OnRunInput, cachedHoldFalse);
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
@@ -191,10 +188,8 @@ public class InputManager :BaseManager<InputManager>
 
     private void OnLookPerformed(InputAction.CallbackContext context)
     {
-        Vector2 lookDelta = context.ReadValue<Vector2>();
-        GameEventBus.GetInstance().Publish(GameEventType.OnLookInput,
-            new InputLookData(lookDelta));
-      //  Debug.Log($"Look Input: {lookDelta}");
+        cachedLookEvent.LookDelta = context.ReadValue<Vector2>();
+        GameEventBus.GetInstance().Publish(GameEventType.OnLookInput, cachedLookEvent);
     }
 
     private void OnInteractPerformed(InputAction.CallbackContext context)
@@ -212,53 +207,35 @@ public class InputManager :BaseManager<InputManager>
     private void OnScrollPerformed(InputAction.CallbackContext context)
     {
         Vector2 scrollValue = context.ReadValue<Vector2>();
-
-        // 我们主要关心 y 轴（上下滚动）
         if (scrollValue.y > 0)
-        {
-            //Debug.Log("滚轮向上：切下一把武器");
-            // 可以通过 GameEventBus 发布一个切换下一把枪的事件
-            GameEventBus.GetInstance().Publish(GameEventType.OnNextWeapon,new InputActionData("NextWeapon"));
-        }
+            GameEventBus.GetInstance().Publish(GameEventType.OnNextWeapon, new InputActionData("NextWeapon"));
         else if (scrollValue.y < 0)
-        {
-           // Debug.Log("滚轮向下：切上一把武器");
-            // 可以通过 GameEventBus 发布一个切换上一把枪的事件
             GameEventBus.GetInstance().Publish(GameEventType.OnPrevWeapon, new InputActionData("PrevWeapon"));
-
-        }
     }
 
     private void OnShootPerformed(InputAction.CallbackContext context)
     {
-        GameEventBus.GetInstance().Publish(GameEventType.OnShoot,
-            new InputHoldingData(true));
-        
+        GameEventBus.GetInstance().Publish(GameEventType.OnShoot, cachedHoldTrue);
     }
     private void OnShootCanceled(InputAction.CallbackContext context)
     {
-        GameEventBus.GetInstance().Publish(GameEventType.OnShoot,
-            new InputHoldingData(false));
+        GameEventBus.GetInstance().Publish(GameEventType.OnShoot, cachedHoldFalse);
     }
     private void OnReloadPerformed(InputAction.CallbackContext context)
     {
-        GameEventBus.GetInstance().Publish(GameEventType.OnReload,
-            new InputActionData("Reload"));
+        GameEventBus.GetInstance().Publish(GameEventType.OnReload, new InputActionData("Reload"));
     }
     private void OnAimPerformed(InputAction.CallbackContext context)
     {
-        GameEventBus.GetInstance().Publish(GameEventType.OnAim,
-            new InputHoldingData(true));
+        GameEventBus.GetInstance().Publish(GameEventType.OnAim, cachedHoldTrue);
     }
     private void OnAimCanceled(InputAction.CallbackContext context)
     {
-        GameEventBus.GetInstance().Publish(GameEventType.OnAim,
-            new InputHoldingData(false));
+        GameEventBus.GetInstance().Publish(GameEventType.OnAim, cachedHoldFalse);
     }
     private void OnInspectPerformed(InputAction.CallbackContext context)
     {
-        GameEventBus.GetInstance().Publish(GameEventType.OnInspect,
-            new InputActionData("Inspect"));
+        GameEventBus.GetInstance().Publish(GameEventType.OnInspect, new InputActionData("Inspect"));
     }
 
     private void OnDropWeaponPerformed(InputAction.CallbackContext conext)
@@ -268,35 +245,11 @@ public class InputManager :BaseManager<InputManager>
 
     private void OnCrouchPerformed(InputAction.CallbackContext context)
     {
-        GameEventBus.GetInstance().Publish(GameEventType.OnCrouchInput,
-            new InputActionData("Crouch"));
+        GameEventBus.GetInstance().Publish(GameEventType.OnCrouchInput, new InputActionData("Crouch"));
     }
 
     #endregion
 
-
-    /// <summary>
-    /// 逐帧更新（如果有些输入需要逐帧读取值，可以放这里）
-    /// 比如：持续按住的输入、需要平滑处理的输入等
-    /// </summary>
-    private void OnUpdate()
-    {
-        // 示例：如果需要每帧获取当前移动方向（用于平滑处理等）
-        // 大多数情况下用上面的回调就够了，这里作为补充
-        // 每帧读取当前移动输入值
-        if (inputActions != null)
-        {
-            Vector2 moveValue = inputActions.Player.Move.ReadValue<Vector2>();
-
-            // 只有当值不为零时才发布事件（避免每帧都发无用事件）
-            // 或者你可以每帧都发，让业务层自己判断
-            if (moveValue != Vector2.zero)
-            {
-                GameEventBus.GetInstance().Publish(GameEventType.OnMoveInput,
-                    new InputEventData(moveValue));
-            }
-        }
-    }
 
     // ===== 对外提供的查询接口（可选）=====
 
