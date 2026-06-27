@@ -16,24 +16,31 @@ public class PlayerAnimationController : MonoBehaviour
 
     // 第三人称上半身随鼠标俯仰倾斜
     public float pitchAngle;
-    private Transform spineBone;
-    private Quaternion spineInitialLocalRot;
+    private Transform[] spineBones = new Transform[3];
+
+    // 第三人称武器跟随
+    [SerializeField] private Transform tpWeaponModel;
+    private Transform handRBone;
+    private Vector3 gripPosOffset;
+    private Quaternion gripRotOffset;
 
     void Start()
     {
         animator = GetComponent<Animator>();
 
-        // 获取第三人称身体的脊椎骨骼（Generic 只能用名字查找）
         if (bodyAnimator != null)
         {
-            spineBone = FindDeepChild(bodyAnimator.transform, "spine_03");
-            if (spineBone != null)
+            string[] spineNames = { "spine_01", "spine_02", "spine_03" };
+            for (int i = 0; i < spineNames.Length; i++)
+                spineBones[i] = FindDeepChild(bodyAnimator.transform, spineNames[i]);
+
+            handRBone = FindDeepChild(bodyAnimator.transform, "hand_r");
+
+            // 记录武器相对手的初始握持偏移
+            if (tpWeaponModel != null && handRBone != null)
             {
-                spineInitialLocalRot = spineBone.localRotation;
-            }
-            else
-            {
-                Debug.LogWarning("[PlayerAnimationController] 未找到 spine_03，上半身倾斜失效");
+                gripPosOffset = handRBone.InverseTransformPoint(tpWeaponModel.position);
+                gripRotOffset = Quaternion.Inverse(handRBone.rotation) * tpWeaponModel.rotation;
             }
         }
     }
@@ -41,9 +48,7 @@ public class PlayerAnimationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // 每帧在 Update 里，让当前的 Aiming 参数平滑逼近我们的 targetAimValue目标
         float currentAim = animator.GetFloat("Aiming");
-        // 0.05f 是过渡时间，Time.deltaTime / 0.05f 可以做到匀速且精准到达 0 或 1
         float nextAim = Mathf.MoveTowards(currentAim, targetAimValue, Time.deltaTime / 0.05f);
         animator.SetFloat("Aiming", nextAim);
     }
@@ -53,12 +58,27 @@ public class PlayerAnimationController : MonoBehaviour
     /// </summary>
     void LateUpdate()
     {
-        if (spineBone != null)
+        // 默认姿态上仰补偿 + 鼠标俯仰
+        float spineDefaultOffset = -12f;
+        float tiltAngle = -pitchAngle * 0.5f + spineDefaultOffset;
+        tiltAngle = Mathf.Clamp(tiltAngle, -30f, 30f);
+
+        float[] ratios = { 0.20f, 0.35f, 0.45f };
+
+        for (int i = 0; i < spineBones.Length; i++)
         {
-            // 抬头(pitch为负) → 脊椎后仰(X正)，低头(pitch为正) → 脊椎前倾(X负)
-            float tiltAngle = -pitchAngle * 0.5f;
-            tiltAngle = Mathf.Clamp(tiltAngle, -30f, 30f);
-            spineBone.localRotation = spineInitialLocalRot * Quaternion.Euler(0f, 0f, -tiltAngle);
+            if (spineBones[i] != null)
+            {
+                float boneTilt = tiltAngle * ratios[i];
+                spineBones[i].localRotation *= Quaternion.Euler(0f, 0f, -boneTilt);
+            }
+        }
+
+        // 第三人称武器跟随 hand_r，保留初始握持偏移
+        if (tpWeaponModel != null && handRBone != null)
+        {
+            tpWeaponModel.position = handRBone.TransformPoint(gripPosOffset);
+            tpWeaponModel.rotation = handRBone.rotation * gripRotOffset;
         }
     }
 
