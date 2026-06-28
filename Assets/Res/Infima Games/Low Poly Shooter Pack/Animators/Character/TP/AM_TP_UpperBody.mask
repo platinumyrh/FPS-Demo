@@ -16,19 +16,19 @@ AvatarMask:
   - m_Path: Armature/root
     m_Weight: 0
   - m_Path: Armature/root/ik_foot_root
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/root/ik_foot_root/ik_foot_l
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/root/ik_foot_root/ik_foot_r
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/root/ik_hand_root
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/root/ik_hand_root/ik_hand_gun
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/root/ik_hand_root/ik_hand_gun/ik_hand_l
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/root/ik_hand_root/ik_hand_gun/ik_hand_r
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/root/pelvis
     m_Weight: 0
   - m_Path: Armature/root/pelvis/spine_01

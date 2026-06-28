@@ -60,6 +60,7 @@ public class PlayerWeaponManager : MonoBehaviour
     #endregion
 
     private Animator playerAnimator;
+    private PlayerAnimationController animationController;
     private bool isSwitching = false;
     private PlayerController playerController;
 
@@ -68,6 +69,7 @@ public class PlayerWeaponManager : MonoBehaviour
     void Start()
     {
         playerAnimator = GetComponentInChildren<Animator>();
+        animationController = GetComponentInChildren<PlayerAnimationController>();
         playerController = GetComponent<PlayerController>();
 
         // 1. 构建武器库查找表
@@ -253,13 +255,17 @@ public class PlayerWeaponManager : MonoBehaviour
         // 显示新武器（它一直在 INVENTORY 下，只是之前失活了）
         newWeapon.gameObject.SetActive(true);
 
-        // 绑定动画控制器
+        // 绑定 FP 动画控制器
         AnimatorOverrideController overrider = newWeapon.GetWeaponOverrideController();
         if (overrider != null && playerAnimator != null)
         {
             playerAnimator.runtimeAnimatorController = overrider;
         }
         playerAnimator?.SetBool("Holstered", false);
+
+        // 绑定 TP 身体动画 + 切换枪模型
+        AnimatorOverrideController tpOverrider = newWeapon.GetTPWeaponOverrideController();
+        animationController?.SetTPWeaponOverride(tpOverrider, newWeapon.GetWeaponId());
 
         // 绑定到 PlayerController
         if (playerController != null)

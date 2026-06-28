@@ -1,166 +1,241 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 
 public class PlayerAnimationController : MonoBehaviour
 {
+    #region 第一人称动画
+
     private Animator animator;
-    [SerializeField] private Animator bodyAnimator;
-
-    
-
-
-    // 新增：用于在 Update 中记录当前的瞄准目标值
     private float targetAimValue = 0f;
 
-    // 第三人称上半身随鼠标俯仰倾斜
-    public float pitchAngle;
-    private Transform[] spineBones = new Transform[3];
+    // Animator 参数哈希缓存
+    private static readonly int HashAiming    = Animator.StringToHash("Aiming");
+    private static readonly int HashRunning   = Animator.StringToHash("Running");
+    private static readonly int HashHorizontal = Animator.StringToHash("Horizontal");
+    private static readonly int HashVertical  = Animator.StringToHash("Vertical");
+    private static readonly int HashMovement  = Animator.StringToHash("Movement");
+    private static readonly int HashPlayRate  = Animator.StringToHash("Play Rate Locomotion");
+    private static readonly int HashAim       = Animator.StringToHash("Aim");
+    private static readonly int HashCrouching = Animator.StringToHash("Crouching");
+    private static readonly int HashFire      = Animator.StringToHash("Fire");
+    private static readonly int HashReload    = Animator.StringToHash("Reload");
+    private static readonly int HashReloadEmpty = Animator.StringToHash("Reload Empty");
+    private static readonly int HashInspect   = Animator.StringToHash("Inspect");
+    // 第三人称身体动画
+    private static readonly int HashTPFire       = Animator.StringToHash("Fire");
+    private static readonly int HashTPReload     = Animator.StringToHash("Reload");
+    private static readonly int HashTPReloadEmpty = Animator.StringToHash("Reload_Empty");
+    private static readonly int HashTPCrouching  = Animator.StringToHash("Crouching");
+    private static readonly int HashTPLand       = Animator.StringToHash("Land");
 
-    // 第三人称武器跟随
-    [SerializeField] private Transform tpWeaponModel;
-    private Transform handRBone;
-    private Vector3 gripPosOffset;
-    private Quaternion gripRotOffset;
-
-    void Start()
+    void Update()
     {
-        animator = GetComponent<Animator>();
+        SmoothAimingParameter();
+    }
 
+    private void SmoothAimingParameter()
+    {
+        float currentAim = animator.GetFloat(HashAiming);
+        float nextAim = Mathf.MoveTowards(currentAim, targetAimValue, Time.deltaTime / 0.05f);
+        animator.SetFloat(HashAiming, nextAim);
+    }
+
+    public void ApplyLocomotion(Vector2 inputDir, bool isRunning)
+    {
+        float forwardAmount = inputDir.y;
+        float strafeAmount = inputDir.x;
+
+        animator.SetBool(HashRunning, isRunning);
+        animator.SetFloat(HashHorizontal, forwardAmount, 0.1f, Time.deltaTime);
+        animator.SetFloat(HashVertical, strafeAmount, 0.1f, Time.deltaTime);
+        animator.SetFloat(HashMovement, 1, 0.1f, Time.deltaTime);
+        animator.SetFloat(HashPlayRate, 1, 0.1f, Time.deltaTime);
+
+        SyncBodyLocomotion(forwardAmount, strafeAmount, isRunning);
+    }
+
+    public void ApplyAim(bool isAiming)
+    {
+        targetAimValue = isAiming ? 1f : 0f;
+        animator.SetBool(HashAim, isAiming);
+    }
+
+    public void ApplyCrouch(bool isCrouching)
+    {
+        animator.SetBool(HashCrouching, isCrouching);
         if (bodyAnimator != null)
+            bodyAnimator.SetBool(HashTPCrouching, isCrouching);
+    }
+
+    public void ApplyShoot()
+    {
+        animator.CrossFade(HashFire, 0.1f, -1, 0f);
+        if (bodyAnimator != null)
+            bodyAnimator.CrossFade(HashTPFire, 0.1f, -1, 0f);
+        if (tpGunAnimController != null)
+            tpGunAnimController.PlayShoot();
+
+        // 在 TP 枪口位置也播放枪口火焰（fireSoundPath=null 避免音效重复播放）
+        if (activeTPModel != null)
         {
-            string[] spineNames = { "spine_01", "spine_02", "spine_03" };
-            for (int i = 0; i < spineNames.Length; i++)
-                spineBones[i] = FindDeepChild(bodyAnimator.transform, spineNames[i]);
-
-            handRBone = FindDeepChild(bodyAnimator.transform, "hand_r");
-
-            // 记录武器相对手的初始握持偏移
-            if (tpWeaponModel != null && handRBone != null)
+            Transform tpMuzzle = FindDeepChild(activeTPModel, "SOCKET_Muzzle");
+            if (tpMuzzle != null)
             {
-                gripPosOffset = handRBone.InverseTransformPoint(tpWeaponModel.position);
-                gripRotOffset = Quaternion.Inverse(handRBone.rotation) * tpWeaponModel.rotation;
+                GameEventBus.GetInstance().Publish(GameEventType.OnShooted,
+                    new Shooted(tpMuzzle.position, Quaternion.LookRotation(-tpMuzzle.up), null, activeTPModel.gameObject.layer));
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StopShoot() { }
+
+    public void ApplyReload(bool isEmpty)
     {
-        float currentAim = animator.GetFloat("Aiming");
-        float nextAim = Mathf.MoveTowards(currentAim, targetAimValue, Time.deltaTime / 0.05f);
-        animator.SetFloat("Aiming", nextAim);
+        animator.CrossFade(isEmpty ? HashReloadEmpty : HashReload, 0.1f);
+        if (bodyAnimator != null)
+            bodyAnimator.CrossFade(isEmpty ? HashTPReloadEmpty : HashTPReload, 0.1f);
+        if (tpGunAnimController != null)
+            tpGunAnimController.PlayReload(isEmpty);
     }
 
-    /// <summary>
-    /// LateUpdate 在 Animator 更新完骨骼之后执行，确保我们的旋转不会被动画覆盖
-    /// </summary>
+    public void ApplyInspect()
+    {
+        animator.CrossFade(HashInspect, 0.1f);
+        if (tpGunAnimController != null)
+            tpGunAnimController.PlayInspect();
+    }
+
+    public void OnAnimationEndedReload()
+    {
+        GameEventBus.GetInstance().Publish<InputActionData>(
+            GameEventType.OnReloadComplete,
+            new InputActionData("ReloadComplete")
+        );
+    }
+
+    #endregion
+
+    // ────────────────────────────────────────────────
+
+    #region 第三人称动画
+
+    [SerializeField] private Animator bodyAnimator;
+    [SerializeField] private Transform tpWeaponContainer; // TP 武器容器（含所有枪模型，初始全部失活）
+
+    private Transform[] spineBones = new Transform[3];
+    private Transform handRBone;
+    private Vector3 gripPosOffset;
+    private Animator tpGunAnimator;
+    private GunAnimationController tpGunAnimController;
+    private Transform activeTPModel; // 当前激活的 TP 枪模型
+
+    // 脊椎倾斜比例（静态只读，避免每帧分配数组）
+    private static readonly float[] SpineRatios = { 0.20f, 0.35f, 0.45f };
+    private static readonly float SpineDefaultOffset = -12f;
+
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        InitThirdPersonBones();
+    }
+
     void LateUpdate()
     {
-        // 默认姿态上仰补偿 + 鼠标俯仰
-        float spineDefaultOffset = -12f;
-        float tiltAngle = -pitchAngle * 0.5f + spineDefaultOffset;
-        tiltAngle = Mathf.Clamp(tiltAngle, -30f, 30f);
+        UpdateTPSpine();
+        UpdateTPWeapon();
+    }
 
-        float[] ratios = { 0.20f, 0.35f, 0.45f };
+    private void InitThirdPersonBones()
+    {
+        if (bodyAnimator == null) return;
+
+        string[] spineNames = { "spine_01", "spine_02", "spine_03" };
+        for (int i = 0; i < spineNames.Length; i++)
+            spineBones[i] = FindDeepChild(bodyAnimator.transform, spineNames[i]);
+
+        handRBone = FindDeepChild(bodyAnimator.transform, "hand_r");
+    }
+
+    private void UpdateTPSpine()
+    {
+        // 从第一人称 Animator 的 localRotation 读取当前俯仰角
+        float pitch = animator.transform.localRotation.eulerAngles.x;
+        if (pitch > 180f) pitch -= 360f;
+
+        // 直接用 FP 的 pitch，不做额外缩放和钳制
+        float tiltAngle = -pitch + SpineDefaultOffset;
 
         for (int i = 0; i < spineBones.Length; i++)
         {
             if (spineBones[i] != null)
             {
-                float boneTilt = tiltAngle * ratios[i];
-                spineBones[i].localRotation *= Quaternion.Euler(0f, 0f, -boneTilt);
+                float boneTilt = tiltAngle * SpineRatios[i];
+                spineBones[i].localRotation = spineBones[i].localRotation * Quaternion.Euler(0f, 0f, -boneTilt);
             }
         }
+    }
 
-        // 第三人称武器跟随 hand_r，保留初始握持偏移
-        if (tpWeaponModel != null && handRBone != null)
+    private void UpdateTPWeapon()
+    {
+        if (activeTPModel == null) return;
+
+        // 枪口朝向 = FP 相机方向（含 yaw + pitch），跟准星对齐
+        activeTPModel.rotation = animator.transform.rotation;
+
+        // 枪位置 = hand_r + 握持偏移，跟随手臂动画
+        if (handRBone != null)
         {
-            tpWeaponModel.position = handRBone.TransformPoint(gripPosOffset);
-            tpWeaponModel.rotation = handRBone.rotation * gripRotOffset;
+            activeTPModel.position = handRBone.TransformPoint(gripPosOffset);
         }
     }
 
-    public void ApplyLocomotion(Vector2 inputDir,bool isRunning)
+    /// <summary>
+    /// 由 PlayerWeaponManager 在切枪时调用，切换 TP 身体动画 + 激活对应枪模型
+    /// </summary>
+    public void SetTPWeaponOverride(AnimatorOverrideController bodyOverrider, string weaponId)
     {
-        // 将输入方向转换为动画参数
-        float forwardAmount = inputDir.y; // 前后输入
-        float strafeAmount = inputDir.x;  // 左右输入
-        // 设置动画参数
-        animator.SetBool("Running", isRunning);
-        animator.SetFloat("Horizontal", forwardAmount, 0.1f, Time.deltaTime); // 平滑过渡
-        animator.SetFloat("Vertical", strafeAmount, 0.1f, Time.deltaTime);  // 平滑过渡
-        animator.SetFloat("Movement", 1,0.1f, Time.deltaTime);
-        animator.SetFloat("Play Rate Locomotion", 1, 0.1f, Time.deltaTime);
+        // 切换身体动画
+        if (bodyAnimator != null && bodyOverrider != null)
+            bodyAnimator.runtimeAnimatorController = bodyOverrider;
 
+        // 切换枪模型：失活旧模型，激活新模型
+        if (tpWeaponContainer == null) return;
+
+        if (activeTPModel != null)
+            activeTPModel.gameObject.SetActive(false);
+
+        Transform newModel = tpWeaponContainer.Find(weaponId);
+        if (newModel != null)
+        {
+            newModel.gameObject.SetActive(true);
+            activeTPModel = newModel;
+
+            tpGunAnimator = newModel.GetComponent<Animator>();
+            tpGunAnimController = newModel.GetComponent<GunAnimationController>();
+
+            // 抓取握持偏移
+            if (handRBone != null)
+                gripPosOffset = handRBone.InverseTransformPoint(newModel.position);
+        }
+    }
+
+    public void PlayLand()
+    {
+        if (bodyAnimator != null)
+            bodyAnimator.CrossFade(HashTPLand, 0.1f);
+    }
+
+    private void SyncBodyLocomotion(float forwardAmount, float strafeAmount, bool isRunning)
+    {
         if (bodyAnimator != null)
         {
-            bodyAnimator.SetFloat("Horizontal", forwardAmount);
-            bodyAnimator.SetFloat("Vertical", strafeAmount);
-            bodyAnimator.SetBool("Running", isRunning);
-        }
-        else
-        {
-            Debug.Log("bodyAnimator为空");
+            bodyAnimator.SetFloat(HashHorizontal, forwardAmount);
+            bodyAnimator.SetFloat(HashVertical, strafeAmount);
+            bodyAnimator.SetBool(HashRunning, isRunning);
         }
     }
 
-    public void ApplyAim(bool isAiming)
-    {
-        // 如果是 1D/2D 混合树控制瞄准姿态：
-        targetAimValue = isAiming ? 1f : 0f;
-
-        animator.SetBool("Aim", isAiming);
-    }
-    public void ApplyCrouch(bool isCrouching)
-    {
-        animator.SetBool("Crouching", isCrouching);
-    }
-
-
-    public void ApplyShoot()
-    {
-        animator.CrossFade("Fire", 0.1f, -1, 0f); // 直接播放射击动画，假设动画状态机里有个叫 Shoot 的状态
-    }
-    public void StopShoot()
-    {
-        //animator.Play("Idle"); // 直接切回待机动画，假设动画状态机里有个叫 Idle 的状态
-    }
-     public void ApplyReload(bool isEmpty )
-    {
-        if (isEmpty)
-        {
-            animator.CrossFade("Reload Empty", 0.1f); // 平滑过渡到空弹换弹动画
-        }
-        else
-        {
-            animator.CrossFade("Reload", 0.1f); // 平滑过渡到换弹动画
-        }
-        
-    }
-     public void ApplyInspect()
-    {
-       animator.CrossFade("Inspect", 0.1f); // 平滑过渡到检查枪械动画   
-    }
-
-    /// <summary>
-    /// 动画事件回调：由换弹动画结束时通过 Animation Event 自动调用
-    /// </summary>
-    public void OnAnimationEndedReload()
-    {
-        //Debug.Log($"[PlayerController] 收到换弹动画结束事件，正在通知武器...");
-
-        // 往事件总线广播：换弹动画结束了
-        GameEventBus.GetInstance().Publish<InputActionData>(
-            GameEventType.OnReloadComplete, // 你可以自定义一个这样的枚举事件
-            new InputActionData("ReloadComplete")
-        );
-    }
-
-    /// <summary>
-    /// 递归查找子节点（不限深度）
-    /// </summary>
     private Transform FindDeepChild(Transform parent, string targetName)
     {
         foreach (Transform child in parent)
@@ -172,4 +247,5 @@ public class PlayerAnimationController : MonoBehaviour
         return null;
     }
 
+    #endregion
 }

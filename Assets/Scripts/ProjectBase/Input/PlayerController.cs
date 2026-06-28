@@ -33,12 +33,8 @@ public class PlayerController : MonoBehaviour
     [Header("下蹲设置")]
     [SerializeField] private float standHeight = 2.0f;
     [SerializeField] private float crouchHeight = 1.2f;
-    [SerializeField] private float crouchSpeed = 8f;
     // 建议在 Player 下单独建一个 CameraRoot 空物体放相机，或者直接引用相机
     [SerializeField] private Transform cameraTransform;
-    private float targetCameraY;
-    private Vector3 cameraOriginLocalPos;
-    private float animatorOriginLocalY; // 新增：用来记录身体的初始 Y 轴坐标
 
     [Header("战斗相关")]
     [SerializeField] private bool isAiming = false;
@@ -75,9 +71,6 @@ public class PlayerController : MonoBehaviour
         interactionDetector = GetComponent<InteractionDetector>();
 
         if (cameraTransform == null) cameraTransform = playerCamera.transform;
-        cameraOriginLocalPos = cameraTransform.localPosition;
-        targetCameraY = cameraOriginLocalPos.y;
-        animatorOriginLocalY = animator.transform.localPosition.y;
 
         SetCursorState(true); // 游戏开始时默认锁定鼠标
 
@@ -175,12 +168,7 @@ public class PlayerController : MonoBehaviour
         
 
 
-        HandleCrouchingLogic();
-        ApplyMovementAndGravity(); // 每帧调用一次，处理移动和重力逻辑
-
-        // 第三人称上半身俯仰跟随
-        if (animationController != null)
-            animationController.pitchAngle = cameraPitch;
+        ApplyMovementAndGravity();
     }
 
     private void OnMove(InputEventData data)
@@ -222,32 +210,13 @@ public class PlayerController : MonoBehaviour
     {
         isCrouching = !isCrouching;
 
-        // 1. 计算碰撞体目标高度
         float targetHeight = isCrouching ? crouchHeight : standHeight;
-
-        // 2. 物理碰撞体瞬间改变高度，并调整中心点防止浮空
         characterController.height = targetHeight;
         characterController.center = new Vector3(0, targetHeight / 2f, 0);
 
-        // 3. 通知动画状态机切换到下蹲状态
         animationController.ApplyCrouch(isCrouching);
     }
 
-    private void HandleCrouchingLogic()
-    {
-        // 只平滑移动身体（Animator），相机因为是其子物体，会自动完美跟随
-        if (animator != null)
-        {
-            // 站立时回到 animatorOriginLocalY；下蹲时在初始 Y 值的技术上再往下沉
-            float targetAnimatorY = isCrouching ? animatorOriginLocalY - (standHeight - crouchHeight) / 2f : animatorOriginLocalY;
-
-            Vector3 currentAnimPos = animator.transform.localPosition;
-            float nextAnimY = Mathf.MoveTowards(currentAnimPos.y, targetAnimatorY, crouchSpeed * Time.deltaTime);
-
-            // 保持 X 和 Z 不变，只平滑改变 Y
-            animator.transform.localPosition = new Vector3(currentAnimPos.x, nextAnimY, currentAnimPos.z);
-        }
-    }
 
     private void OnInteract(InputActionData data)
     {
@@ -261,7 +230,10 @@ public class PlayerController : MonoBehaviour
         if (characterController == null) return;
 
         // 检测是否在地面上（直接使用 CC 自带的 isGrounded 属性）
+        bool wasGrounded = isGrounded;
         isGrounded = characterController.isGrounded;
+        if (!wasGrounded && isGrounded)
+            animationController?.PlayLand();
 
         if (isGrounded && verticalVelocity < 0)
         {
