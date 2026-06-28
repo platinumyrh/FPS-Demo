@@ -32,13 +32,15 @@ public class GunEffectManager : BaseManager<GunEffectManager>
     /// <summary>
     /// 在指定位置播放特效，播完自动归还池
     /// </summary>
-    public void PlayAt(string poolKey, Vector3 position, Quaternion rotation)
+    public void PlayAt(string poolKey, Vector3 position, Quaternion rotation, int layer = 0)
     {
         ParticleSystem ps = PoolManager.GetInstance().GetEffect(poolKey);
         if (ps == null) return;
 
         ps.transform.position = position;
         ps.transform.rotation = rotation;
+        if (layer != 0)
+            ps.gameObject.layer = layer;
 
         var allPS = ps.GetComponentsInChildren<ParticleSystem>();
         float maxDuration = 0f;
@@ -52,7 +54,7 @@ public class GunEffectManager : BaseManager<GunEffectManager>
 
     private void OnWeaponFired(Shooted data)
     {
-        PlayAt("MuzzleFlash", data.FirePointPosition, data.FirePointRotation);
+        PlayAt("MuzzleFlash", data.FirePointPosition, data.FirePointRotation, data.EffectLayer);
     }
 
     private void OnBulletHit(BulletHitEventData data)

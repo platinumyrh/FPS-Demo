@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AC_TP_Overrider
+  m_Name: OC_TP_Overrider
   m_Controller: {fileID: 9100000, guid: 027ae8cddc85a484fa5fd415d19d7a8e, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 08f6dd1ba7528b944847abc00740e80d, type: 3}

@@ -19,8 +19,10 @@ public enum WeaponType
 public class GunBase : MonoBehaviour
 {
     [Header("动画设置")]
-    [Tooltip("拖入该枪械对应的 Animator Override Controll   er (如 OC_LPSP_PCH_RL_01)")]
+    [Tooltip("拖入该枪械对应的第一人称 Override Controller (如 OC_LPSP_PCH_RL_01)")]
     [SerializeField] private AnimatorOverrideController weaponOverrideController;
+    [Tooltip("该枪对应的第三人称 Override Controller")]
+    [SerializeField] private AnimatorOverrideController tpWeaponOverrideController;
     private GunAnimationController gunAnimController;
 
     [Header("枪械模型")]
@@ -69,6 +71,8 @@ public class GunBase : MonoBehaviour
     [SerializeField] protected string fireSoundPath = "SFX/Guns/Fire/AR_Fire";
     [SerializeField] protected string reloadSoundPath = "SFX/Weapon/Reload";
     [SerializeField] protected string emptyReloadSoundPath = "SFX/Weapon/Reload_Empty";
+    [Header("特效设置")]
+    [SerializeField] protected string muzzleFlashPath = "MuzzleFlash";
 
     
 
@@ -150,7 +154,7 @@ public class GunBase : MonoBehaviour
             }
 
             GameEventBus.GetInstance().Publish(GameEventType.OnShooted,
-    new Shooted(firePoint.position, Quaternion.LookRotation(-firePoint.up), fireSoundPath));
+    new Shooted(firePoint.position, Quaternion.LookRotation(-firePoint.up), fireSoundPath, firePoint.gameObject.layer));
 
             ExcuteShotgunSpread();
         }
@@ -289,7 +293,7 @@ public class GunBase : MonoBehaviour
     }
 
     public AnimatorOverrideController GetWeaponOverrideController() => weaponOverrideController;
-
+    public AnimatorOverrideController GetTPWeaponOverrideController() => tpWeaponOverrideController;
 
 
     #region 辅助方法
