@@ -48,6 +48,9 @@ public class PlayerController : MonoBehaviour
     [Header("第三人称身体")]
     [SerializeField] private Transform bodyTransform;
 
+    [Header("后坐力管理器")]
+    private RecoilController recoilController;
+
     
     
     public GunBase currentWeapon { get; set; }
@@ -69,6 +72,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         animationController = GetComponentInChildren<PlayerAnimationController>();
         interactionDetector = GetComponent<InteractionDetector>();
+        recoilController = GetComponent<RecoilController>();
 
         if (cameraTransform == null) cameraTransform = playerCamera.transform;
 
@@ -165,8 +169,19 @@ public class PlayerController : MonoBehaviour
         {
             HandleContinuousShooting();
         }
-        
 
+        // 后坐力平滑消费（每帧 apply delta，即使鼠标没动也生效）
+        if (recoilController != null)
+        {
+            Vector2 recoilDelta = recoilController.ConsumeDelta();
+            if (recoilDelta != Vector2.zero)
+            {
+                cameraPitch -= recoilDelta.x;
+                cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
+                transform.Rotate(Vector3.up * -recoilDelta.y);
+                animator.transform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+            }
+        }
 
         ApplyMovementAndGravity();
     }
@@ -397,25 +412,17 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void OnLook(InputLookData data)
     {
-        // 如果鼠标未锁定（比如按了ESC弹出了菜单），则不响应视角转动
         if (!isCursorLocked) return;
         if (animator == null) return;
 
-        // 1. 获取输入增量，并乘以灵敏度
-        // 新版输入系统的 Mouse Delta 内部已经处理过像素缩放，这里可以乘以一个基础调节系数
         float mouseX = data.LookDelta.x * mouseSensitivity * 0.1f;
         float mouseY = data.LookDelta.y * mouseSensitivity * 0.1f;
 
-        // 2. 左右看：直接旋转【根对象】（也就是挂有 CC 的当前物体）的 Y 轴
         transform.Rotate(Vector3.up * mouseX);
 
-        // 3. 上下看：通过累积变量来控制【子对象摄像机】的局部 X 轴旋转
-        // 鼠标向上推(mouseY为正)时，镜头应该往上看(Pitch减小)，所以这里用减法
         cameraPitch -= mouseY;
-        // 限制抬头低头的角度，防止翻转过头
         cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
 
-        // 4. 应用相机的局部旋转。强制 Y 和 Z 轴为 0，彻底根治“镜头变歪”和“万向节死锁”
         animator.transform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 

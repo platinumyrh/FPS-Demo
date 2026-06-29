@@ -88,8 +88,16 @@ public class PlayerSoundManager : BaseManager<PlayerSoundManager>
 
     private void OnBulletHit(BulletHitEventData data)
     {
-        // 后续可根据 data.HitInfo 的物理材质切换不同音效
-        SoundManager.GetInstance().PlaySFX("SFX/Guns/Bullet_Impact/Impact_Bullet_01");
+        string tag = data.HitInfo.collider?.tag;
+        switch (tag)
+        {
+            case "Target":
+                SoundManager.GetInstance().PlaySFX("SFX/Damageabel/Target/S_TargetGoDown");
+                break;
+            default:
+                SoundManager.GetInstance().PlaySFX("SFX/Guns/Bullet_Impact/Impact_Bullet_01");
+                break;
+        }
     }
 
     #endregion

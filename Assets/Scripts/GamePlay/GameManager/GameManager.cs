@@ -22,5 +22,7 @@ public class GameManager : MonoBehaviour
         GunEffectManager.GetInstance().Initialize();
 
         PlayerSoundManager.GetInstance().Initialize();
+
+        DamageManager.GetInstance().Initialize();
     }
 }

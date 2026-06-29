@@ -4,8 +4,5 @@ using UnityEngine;
 
 public class Shotgun_01 : GunBase
 {
-    private void Start()
-    {
-        pelletCount = 10;
-    }
+    // 所有数据由 WeaponData (ScriptableObject) 配置，无需在此设值
 }

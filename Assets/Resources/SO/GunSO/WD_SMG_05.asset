@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 791821499ea6dc540afe038487693742, type: 3}
+  m_Name: WD_SMG_05
+  m_EditorClassIdentifier: 
+  weaponType: 0
+  displayName: 
+  weaponDamage: 25
+  fireRange: 100
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  maxAmmoInClip: 30
+  pelletCount: 1
+  spreadAngle: 0.02
+  fireSoundPath: SFX/Guns/Fire/SMG_Fire
+  reloadSoundPath: SFX/Guns/Reload/SMG_05_Reload
+  emptyReloadSoundPath: SFX/Guns/Reload/SMG_05_Reload_Empty
+  muzzleFlashPath: MuzzleFlash
+  iconWeaponBody: {fileID: 21300000, guid: edee8eb0c15b6064f943ec1b17135006, type: 3}
+  iconGrip: {fileID: 0}
+  iconMagazine: {fileID: 21300000, guid: f47242017f7fb4147bfe824c60dd2dca, type: 3}
+  iconLaser: {fileID: 0}
+  iconMuzzle: {fileID: 0}
+  iconScope: {fileID: 21300000, guid: a98f27854865d9347bc1a8635ca7d847, type: 3}

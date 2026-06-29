@@ -4,10 +4,5 @@ using UnityEngine;
 
 public class AR_01 : GunBase
 {
-
-    private void Start()
-    {
-        weaponType = WeaponType.Primary;
-    }
-
+    // 所有数据由 WeaponData (ScriptableObject) 配置，无需在此设值
 }

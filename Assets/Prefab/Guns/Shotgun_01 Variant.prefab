@@ -52,6 +52,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shotgun_01 Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 5224158601274790487, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: weaponId
+      value: P_LPSP_WEP_Shotgun_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5224158601274790487, guid: a5bafc0fa7d87cf41a08d2529c1e3aa9, type: 3}
+      propertyPath: modelPath
+      value: Model/Guns/P_LPSP_WEP_Shotgun_01
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
